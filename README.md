@@ -8,7 +8,6 @@ Este proyecto es un casino virtual que permite a los usuarios apostar con moneda
 
 1. **Apuestas** 💸:
    - Los usuarios pueden realizar apuestas en la ruleta utilizando monedas virtuales.
-   - Cada usuario tiene un saldo inicial de monedas virtuales al registrarse.
    - Las apuestas mínimas y máximas son definidas por el administrador del juego.
 
 2. **Ganancias y Pérdidas** 🎉❌:
