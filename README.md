@@ -13,15 +13,15 @@ Este proyecto es un casino virtual que permite a los usuarios apostar con moneda
 
 2. **Ganancias y Pérdidas** 🎉❌:
    - Las apuestas se resuelven de acuerdo con las reglas estándar de la ruleta.
-   - Las ganancias se acreditan automáticamente al saldo del usuario.
-   - En caso de perder, la cantidad apostada se reduce del saldo.
+   - Las ganancias se acreditan automáticamente al saldo del usuario ganador.
+   - En caso de perder, la cantidad apostada no regresa al saldo.
 
 3. **Referencias** 👥:
    - Los usuarios pueden referir a nuevos jugadores utilizando un enlace único.
-   - Por cada nuevo usuario que se registre y realice una apuesta, el usuario que hizo la referencia recibirá una recompensa en monedas virtuales.
+   - Por cada nuevo usuario que se registre y gane una apuesta, el usuario que hizo la referencia recibirá una recompensa en monedas virtuales.
 
 4. **Retiro de Fondos** 💰:
-   - Los usuarios pueden solicitar el retiro de sus monedas virtuales a través de un proceso de validación.
+   - Los usuarios pueden solicitar el retiro de sus monedas virtuales a su moneda local través de un proceso de validación.
+   - Los usuarios pueden hacer compra de monedas virtuales con su moneda local. 
    - Un límite mínimo de retiro es establecido para garantizar la viabilidad del sistema.
-
 
