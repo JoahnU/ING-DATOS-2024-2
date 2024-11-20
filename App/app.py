@@ -5,7 +5,7 @@ import jwt
 import datetime
 
 # LLave privada
-secret_key = "Gambling4ever"
+secret_key = "ilovedbandbandgambling"
 
 # Coding token = jwt.encode(payload, secret_key, algorithm="HS256")
 # Decoding token = jwt.decode(message. secret_key, algorithms=["HS256"])
