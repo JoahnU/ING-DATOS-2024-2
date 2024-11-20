@@ -15,7 +15,8 @@ def registrarUsuario(name, email, password):
 
     )
     session.add(nuevoJugador)
-    return session.commit()
+    session.commit()
+    return nuevoJugador
 
 
 def crearjuegos(min_apuesta,capacidad, creator_id ):
@@ -28,6 +29,7 @@ def crearjuegos(min_apuesta,capacidad, creator_id ):
     )
     session.add(nuevojuego)
     session.commit()
+    return nuevojuego
 
 def nuevapuesta(p_id, g_id, valor, numero):
     nuevapuesta = Apuesta(
@@ -38,6 +40,7 @@ def nuevapuesta(p_id, g_id, valor, numero):
     )
     session.add(nuevapuesta)
     session.commit()
+    return nuevapuesta
 
 def compras(player_id, div_id, cantidad):
 
@@ -49,7 +52,7 @@ def compras(player_id, div_id, cantidad):
     )
     session.add(nuevacompra)
     session.commit()
-
+    return nuevacompra
 
 #read
 
