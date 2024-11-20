@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, session
 
 # Para autenticación
 import jwt 
@@ -18,8 +18,26 @@ payload = {
 
 app = Flask(__name__)
 
+app.secret_key = 'Gambling4ever'
+
 @app.route("/")
 def hello_world():
     return render_template("index.html")
 
+@app.route("/hola/<nombre>")
+def obtenerName(nombre):
+    session['nombre'] = nombre
+    return f"<h1> Hola {nombre}</h1>"
+
+
+@app.route("/validando")
+def saludoPersonalizado():
+        if 'nombre' in session:
+            return f"<h1> Hola {session['nombre']}</h1>"
+        return "No te conozco"
+
+@app.route("/close")
+def cerrarSesion():
+    session.clear()
+    return "session cleared"
 
