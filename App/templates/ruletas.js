@@ -35,6 +35,7 @@ function drawRouletteWheel() {
     var outsideRadius = 250;
     var textRadius = 220;
     var insideRadius = 125;
+    var mediumRadius = 175;
 
     ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, 500, 500);
@@ -50,7 +51,8 @@ function drawRouletteWheel() {
 
       ctx.beginPath();
       ctx.arc(250, 250, outsideRadius, angle, angle + arc, false);
-      ctx.arc(250, 250, insideRadius, angle + arc, angle, true);
+      ctx.arc(250, 250, insideRadius, angle + arc, angle, false);
+      ctx.arc(250, 250, mediumRadius, angle + arc, angle, true);
       ctx.stroke();
       ctx.fill();
 
