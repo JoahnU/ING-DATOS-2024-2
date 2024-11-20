@@ -7,12 +7,6 @@ import datetime
 # LLave privada
 secret_key = "Gambling4ever"
 
-payload = {
-    "user": "Juan Betancourt",
-    "exp": datetime.datetime.utcnow() + datetime.timedelta(days = 2),
-    "iat": datetime.datetime.utcnow()
-}
-
 # Coding token = jwt.encode(payload, secret_key, algorithm="HS256")
 # Decoding token = jwt.decode(message. secret_key, algorithms=["HS256"])
 
@@ -41,3 +35,5 @@ def cerrarSesion():
     session.clear()
     return "session cleared"
 
+if __name__ == '__main__':
+     app.run()
