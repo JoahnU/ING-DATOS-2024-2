@@ -23,7 +23,7 @@ class Jugador(Base):
     compras = relationship("Compra", back_populates="jugador")
 
 
-# Tabla Juegos
+# Tabla Juegos 
 class Juegos(Base):
     __tablename__ = "juegos"
     
