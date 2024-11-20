@@ -59,7 +59,9 @@ class Apuesta(Base):
     
     player_id = Column(Integer, ForeignKey("jugador.player_id", ondelete="CASCADE"), primary_key=True)
     game_id = Column(Integer, ForeignKey("juegos.game_id", ondelete="CASCADE"), primary_key=True)
-    
+    valor = Column(DECIMAL(10, 2), default=0.00)
+    numero = Column(Integer)
+
     # Relaciones
     jugador = relationship("Jugador", back_populates="apuestas")
     juego = relationship("Juegos", back_populates="apuestas")
@@ -80,5 +82,5 @@ class Compra(Base):
 
 
 # Crear el motor y las tablas (si es necesario)
-# engine = create_engine("postgresql+psycopg2://usuario:password@localhost/tu_base_de_datos")
-# Base.metadata.create_all(engine)
+engine = create_engine("postgresql+psycopg2://postgres:password@localhost/gambling")
+Base.metadata.create_all(engine)

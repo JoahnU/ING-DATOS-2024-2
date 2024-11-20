@@ -5,7 +5,7 @@ import jwt
 import datetime
 
 # LLave privada
-secret_key = "Gambling4ever"
+secret_key = "ilovedbandbandgambling"
 
 payload = {
     "user": "Juan Betancourt",
