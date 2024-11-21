@@ -13,10 +13,10 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background: #1e1e1e; /* Fondo oscuro */
+            background: #1e1e1e;
         }
         .form-container {
-            background: #333; /* Fondo gris oscuro */
+            background: #333;
             padding: 30px;
             border-radius: 8px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
@@ -28,19 +28,19 @@
             text-align: center;
             font-size: 2rem;
             margin-bottom: 20px;
-            color: #D32F2F; /* Rojo oscuro */
-            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7); /* Sombra fuerte */
+            color: #D32F2F;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
         }
         .form-container label {
             font-size: 1.1rem;
             margin-bottom: 5px;
-            color: #ccc; /* Gris claro */
+            color: #ccc;
         }
         .form-container input {
             width: 100%;
             padding: 12px;
             margin: 10px 0;
-            border: 2px solid #666; /* Gris oscuro */
+            border: 2px solid #666;
             border-radius: 5px;
             background-color: #222;
             color: white;
@@ -49,14 +49,14 @@
             transition: all 0.3s ease;
         }
         .form-container input:focus {
-            border-color: #D32F2F; /* Rojo oscuro */
+            border-color: #D32F2F;
             background-color: #333;
             outline: none;
         }
         .form-container button {
             width: 100%;
             padding: 12px;
-            background-color: #D32F2F; /* Rojo oscuro */
+            background-color: #D32F2F;
             color: white;
             border: none;
             border-radius: 5px;
@@ -65,35 +65,55 @@
             transition: all 0.3s ease;
         }
         .form-container button:hover {
-            background-color: #B71C1C; /* Rojo más oscuro */
+            background-color: #B71C1C;
+        }
+        .homepage-btn {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #D32F2F;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .admin-link {
+            text-align: center;
+            margin-top: 15px;
+        }
+        .admin-link a {
+            color: #D32F2F;
+            text-decoration: none;
         }
     </style>
 </head>
 <body>
-
-<div class="form-container">
-    <h2>Crear Juego de Ruleta</h2>
-    <form action="{{ url_for('create_roulette') }}" method="POST">
-        <div>
-            <label for="game_name">Nombre del Juego</label>
-            <input type="text" id="game_name" name="game_name" required placeholder="Ingresa el nombre del juego">
+    <div class="form-container">
+        <h2>Crear Juego de Ruleta</h2>
+        <form action="{{ url_for('create_roulette') }}" method="POST">
+            <div>
+                <label for="game_name">Nombre del Juego</label>
+                <input type="text" id="game_name" name="game_name" required placeholder="Ingresa el nombre del juego">
+            </div>
+            <div>
+                <label for="min_bet">Apuesta Mínima</label>
+                <input type="number" id="min_bet" name="min_bet" required placeholder="Apuesta mínima" min="1">
+            </div>
+            <div>
+                <label for="game_time">Hora del Juego</label>
+                <input type="time" id="game_time" name="game_time" required>
+            </div>
+            <div>
+                <label for="capacity">Capacidad</label>
+                <input type="number" id="capacity" name="capacity" required placeholder="Capacidad máxima" min="1">
+            </div>
+            <button type="submit">Crear Juego</button>
+        </form>
+        <a href=homepage.html class="homepage-btn">Volver</a>
+        <div class="admin-link">
+            <a href="{{ url_for('admin_dashboard') }}">Volver al Panel de Administración</a>
         </div>
-        <div>
-            <label for="min_bet">Apuesta Mínima</label>
-            <input type="number" id="min_bet" name="min_bet" required placeholder="Apuesta mínima" min="1">
-        </div>
-        <div>
-            <label for="game_time">Hora del Juego</label>
-            <input type="time" id="game_time" name="game_time" required>
-        </div>
-        <div>
-            <label for="capacity">Capacidad</label>
-            <input type="number" id="capacity" name="capacity" required placeholder="Capacidad máxima" min="1">
-        </div>
-        <button type="submit">Crear Juego</button>
-    </form>
-    <p><a href="{{ url_for('admin_dashboard') }}" style="color: #D32F2F;">Volver al Panel de Administración</a></p>
-</div>
-
+    </div>
 </body>
 </html>
