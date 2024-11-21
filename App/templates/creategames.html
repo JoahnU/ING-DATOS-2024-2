@@ -89,31 +89,33 @@
     </style>
 </head>
 <body>
-    <div class="form-container">
-        <h2>Crear Juego de Ruleta</h2>
-        <form action="{{ url_for('create_roulette') }}" method="POST">
-            <div>
-                <label for="game_name">Nombre del Juego</label>
-                <input type="text" id="game_name" name="game_name" required placeholder="Ingresa el nombre del juego">
-            </div>
-            <div>
-                <label for="min_bet">Apuesta Mínima</label>
-                <input type="number" id="min_bet" name="min_bet" required placeholder="Apuesta mínima" min="1">
-            </div>
-            <div>
-                <label for="game_time">Hora del Juego</label>
-                <input type="time" id="game_time" name="game_time" required>
-            </div>
-            <div>
-                <label for="capacity">Capacidad</label>
-                <input type="number" id="capacity" name="capacity" required placeholder="Capacidad máxima" min="1">
-            </div>
-            <button type="submit">Crear Juego</button>
-        </form>
-        <a href=homepage.html class="homepage-btn">Volver</a>
-        <div class="admin-link">
-            <a href="{{ url_for('admin_dashboard') }}">Volver al Panel de Administración</a>
+
+<div class="form-container">
+    <h2>Crear Juego de Ruleta</h2>
+    <form action="{{ url_for('crearDB') }}" method="POST">
+        <div>
+            <label for="game_name">Nombre del Juego</label>
+            <input type="text" id="game_name" name="game_name" required placeholder="Ingresa el nombre del juego">
         </div>
-    </div>
+        <div>
+            <label for="min_bet">Apuesta Mínima</label>
+            <input type="number" id="min_bet" name="min_bet" required placeholder="Apuesta mínima" min="1">
+        </div>
+        <div>
+            <label for="game_time">Hora del Juego</label>
+            <input type="time" id="game_time" name="game_time" required>
+        </div>
+        <div>
+            <label for="capacity">Capacidad</label>
+            <input type="number" id="capacity" name="capacity" required placeholder="Capacidad máxima" min="1">
+        </div>
+        <button type="submit">Crear Juego</button>
+    </form>
+    <a href=homepage.html class="homepage-btn">Volver</a>
+    <p><a href="{{ url_for('index') }}" style="color: #D32F2F;">Volver al Panel de Administración</a></p>
+    {% if error %}
+        {{ error }}
+    {% endif %}
+</div>
 </body>
 </html>

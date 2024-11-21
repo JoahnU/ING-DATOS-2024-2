@@ -88,9 +88,9 @@
         </div>
         <button type="submit">Iniciar Sesión</button>
     </form>
-    <p><a href="{{url_for('register')}}" style="color: #D32F2F;">¿No tienes cuenta? Regístrate aquí</a></p>
+    <p><a href="{{ url_for('register') }}" style="color: #D32F2F;">¿No tienes cuenta? Regístrate aquí</a></p>
     {% if error %}
-    {{ error }}
+        {{ error }}
     {% endif %}
 </div>
 

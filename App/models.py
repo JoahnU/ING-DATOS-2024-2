@@ -1,5 +1,5 @@
 from sqlalchemy import (
-    create_engine, Column, Integer, String, ForeignKey, DECIMAL, Date, Time, TIMESTAMP, Boolean
+    create_engine, Column, Integer, String, ForeignKey, DECIMAL, Date, Time, TIMESTAMP, Boolean, func, DateTime
 )
 from sqlalchemy.orm import relationship, declarative_base
 
@@ -30,8 +30,9 @@ class Juegos(Base):
     
     game_id = Column(Integer, primary_key=True, autoincrement=True)
     total_bet = Column(DECIMAL(10, 2), default=0.00)
+    game_name = Column(String, default = 'Roulette')
     min_apuesta = Column(DECIMAL(10, 2), nullable=False)
-    fecha_creacion = Column(Date, nullable=False)
+    fecha_creacion = Column(DateTime(timezone=True), server_default=func.now())
     hora_juego = Column(Time, nullable=False)
     capacidad = Column(Integer, nullable=False)
     creador_id = Column(Integer, ForeignKey("jugador.player_id", ondelete="CASCADE"), nullable=False)
