@@ -1,4 +1,79 @@
 body{
-
-    background-color: antiquewhite;
+    font-family: "Arial", sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #1e1e1e;
 }
+
+.form-container{
+    background: #333;
+    padding: 30px;
+    padding-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0,8);
+    width: 100%;
+    max-width: 400px;
+    color: white;
+}
+
+.form-container h2{
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 20px;
+    margin-top: -5px;
+    color: #D32F2F;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0,7);
+}
+
+.form-container label{
+    font-size: 1.0rem;
+    margin-bottom: 5px;
+    color: #ccc;
+}
+
+.form-container input{
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    margin-top: 5px;
+    border: 2px solid #666;
+    border-radius: 5px;
+    background-color: #222;
+    color: white;
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+.form-container input:focus{
+    border-color: #D32F2F;
+    background-color: #333;
+    outline: none;
+}
+
+.form-container button{
+    width: 100%;
+    padding: 12px;
+    background-color: #D32F2F;
+    margin-bottom: 15px;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.form-container button:hover{
+    background-color: #B71C1C;
+}
+
+.form-container .error{
+    color: red;
+    font-size: 0.9em;
+}
+
