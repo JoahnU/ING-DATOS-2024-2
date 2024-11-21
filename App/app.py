@@ -72,6 +72,7 @@ def login_in():
             return render_template("register.html", error = 'Usuario o contraseña no coinciden')
         
     except SQLAlchemyError as e: 
+        operacionesDB.session.rollback()
         return render_template("register.html", error = e)
 
 
@@ -106,6 +107,7 @@ def register_in():
         return redirect(url_for('index'))
 
     except SQLAlchemyError as e: 
+        operacionesDB.session.rollback()
         return render_template("register.html", error = e)
 
 
