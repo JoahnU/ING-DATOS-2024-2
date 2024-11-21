@@ -20,13 +20,13 @@ def registrarUsuario(name, email, password):
     return nuevoJugador
 
 
-def crearjuegos(min_apuesta,capacidad, creator_id ):
+def crearjuegos(nombre, hora, min_apuesta,capacidad, creator_id ):
     nuevojuego = Juegos(
-        total_bet = 0,
         min_apuesta= min_apuesta,
         capacidad = capacidad,
-        creador_id = creator_id
-
+        creador_id = creator_id,
+        hora_juego = hora, 
+        game_name = nombre
     )
     session.add(nuevojuego)
     session.commit()
@@ -148,4 +148,43 @@ def get_game_bets(session, game_id):
 
 
 
+def get_available_games(session):
+    """
+    Retorna una lista de todos los juegos disponibles para unirse.
+    Un juego está disponible si la cantidad de jugadores actuales es menor que su capacidad.
+    """
+    from sqlalchemy.sql import func  # Para usar funciones como COUNT
 
+    # Subconsulta para contar jugadores en cada juego
+    subquery = (
+        session.query(
+            Apuesta.game_id,
+            func.count(Apuesta.player_id).label("current_players")
+        )
+        .group_by(Apuesta.game_id)  # Agrupar por ID del juego
+        .subquery()
+    )
+
+    # Consulta principal para juegos disponibles
+    available_games = (
+        session.query(Juegos)
+        .outerjoin(subquery, Juegos.game_id == subquery.c.game_id)  # Unión con subconsulta
+        .filter(
+            func.coalesce(subquery.c.current_players, 0) < Juegos.capacidad  # Comparar capacidad
+        )
+        .all()
+    )
+    
+    # Formatear la respuesta como lista de diccionarios (opcional)
+    result = [
+        {
+            "game_id": game.game_id,
+            "min_apuesta": game.min_apuesta,
+            "capacidad": game.capacidad,
+            "current_players": subquery.c.current_players if subquery.c.current_players else 0,
+            "creador_id": game.creador_id,
+        }
+        for game in available_games
+    ]
+    
+    return result
