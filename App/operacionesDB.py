@@ -1,4 +1,5 @@
 from models import *
+import hashlib
 
 
 from sqlalchemy.orm import sessionmaker
@@ -11,11 +12,12 @@ session = Session()
 def registrarUsuario(name, email, password):
     nuevoJugador = Jugador(
         user_name = name, 
-        email_adress = email
-
+        email_address = email,
+        password = hashlib.sha256(password.encode('utf-8')).hexdigest()
     )
     session.add(nuevoJugador)
-    return session.commit()
+    session.commit()
+    return nuevoJugador
 
 
 def crearjuegos(min_apuesta,capacidad, creator_id ):
@@ -54,14 +56,13 @@ def compras(player_id, div_id, cantidad):
 #read
 
 def rjugador_id(player_id):
-    players = session.query(Jugador).all()
-    for player in players:
-        print(player.user_name, player.email_address)
+    player = session.query(Jugador).filter(Jugador.player_id==player_id).first()
+    return player
 
 
 def rjugador_email(email_address):
-    player = session.query(Jugador).filter(Jugador.email_address=="player@gmail.com").first()
-    print(player.user_name, player.player_id)
+    player = session.query(Jugador).filter(Jugador.email_address==email_address).first()
+    return player
 
 
 
