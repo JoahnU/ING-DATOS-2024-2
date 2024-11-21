@@ -7,30 +7,27 @@
     <link rel="stylesheet" href="initial.css">
 </head>
 <body>
-  <!-- Navigation bar -->
   <nav>
     <div class="nav-left">
+      <h1>GAMBLING4EVER</h1>
       <a href="#">Affiliates</a>
-
       <a href="#">Blog</a>
     </div>
+    <div class="nav-mid">
+      <h1>Roulette</h1>
+    </div>
     <div class="nav-right">
-
-
-      <a href="#">Support</a>
-
-
-      <button>Sign In</button>
-      <button>Create Account</button>
+      <button class="button-sign">Sign In</button>
+      <button class="button-register">Create Account</button>
     </div>
   </nav>
 
-  <h1>Roulette</h1>
-
-  <!-- Roulette Canvas -->
-  <canvas id="canvas" width="500" height="500"></canvas>
-  <button id="spin">Spin the Wheel!</button>
-  <div id="result">Result: <span id="result-text">-</span></div>
+  <div class="block-ruleta">
+     <canvas id="canvas" width="500" height="500"></canvas>
+     <button id="spin">Spin the Wheel!</button>
+  </div>
+  
+  <div id="result"><span id="result-text">-</span></div>
 
   <!-- Betting Interface -->
   <div class="container">
