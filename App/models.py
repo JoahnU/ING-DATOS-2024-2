@@ -1,5 +1,5 @@
 from sqlalchemy import (
-    create_engine, Column, Integer, String, ForeignKey, DECIMAL, Date, Time, TIMESTAMP
+    create_engine, Column, Integer, String, ForeignKey, DECIMAL, Date, Time, TIMESTAMP, Boolean
 )
 from sqlalchemy.orm import relationship, declarative_base
 
@@ -11,6 +11,7 @@ class Jugador(Base):
     
     player_id = Column(Integer, primary_key=True, autoincrement=True)
     user_name = Column(String(100), nullable=False)
+    user_type = Column(Boolean, default = 0)
     email_address = Column(String(150), nullable=False, unique=True)
     password = Column(String(256), nullable=False)
     balance = Column(DECIMAL(10, 2), default=0.00)
@@ -35,7 +36,7 @@ class Juegos(Base):
     capacidad = Column(Integer, nullable=False)
     creador_id = Column(Integer, ForeignKey("jugador.player_id", ondelete="CASCADE"), nullable=False)
     resultado = Column(Integer, default=-1)
-    color = Column(String, default = " ")
+    color = Column(Integer, nullable=True)
     
     # Relaciones
     creador = relationship("Jugador", back_populates="juegos_creados")
@@ -62,7 +63,7 @@ class Apuesta(Base):
     player_id = Column(Integer, ForeignKey("jugador.player_id", ondelete="CASCADE"), primary_key=True)
     game_id = Column(Integer, ForeignKey("juegos.game_id", ondelete="CASCADE"), primary_key=True)
     valor = Column(DECIMAL(10, 2), default=0.00)
-    numero = Column(Integer)
+    color = Column(Integer, nullable=False)
 
     # Relaciones
     jugador = relationship("Jugador", back_populates="apuestas")
