@@ -3,10 +3,13 @@ var startAngle = 0;
 var arc = Math.PI / (options.length / 2);
 var spinTimeout = null;
 
-var spinArcStart = 10;
 var spinTime = 0;
 var spinTimeTotal = 0;
 var ctx;
+
+// Valor al que la ruleta debe detenerse
+var targetValue = "32"; // Cambia este valor según el número deseado
+var targetIndex = options.indexOf(targetValue);
 
 document.getElementById("spin").addEventListener("click", spin);
 
@@ -15,15 +18,15 @@ function getColor(item, maxitem) {
   const blackNumbers = [2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35];
 
   if (item == 0) {
-    return "#27933e";  // Verde para el 0
+    return "#27933e"; // Verde para el 0
   }
 
   if (redNumbers.includes(parseInt(options[item]))) {
-    return "#b43b3d";  // Rojo
+    return "#b43b3d"; // Rojo
   }
 
   if (blackNumbers.includes(parseInt(options[item]))) {
-    return "#2a2c3f";  // Negro
+    return "#2a2c3f"; // Negro
   }
 
   return "#FFFFFF";
@@ -67,24 +70,18 @@ function drawRouletteWheel() {
     }
 
     // Flecha
-    ctx.fillStyle = "black";
+    ctx.fillStyle = "white";
     ctx.beginPath();
-    ctx.moveTo(250 - 4, 250 - (outsideRadius ));
-    ctx.lineTo(250 + 4, 250 - (outsideRadius ));
-    ctx.lineTo(250 + 4, 250 - (outsideRadius ));
-    ctx.lineTo(250 + 9, 250 - (outsideRadius ));
-    ctx.lineTo(250 + 0, 250 - (outsideRadius ));
-    ctx.lineTo(250 - 9, 250 - (outsideRadius ));
-    ctx.lineTo(250 - 4, 250 - (outsideRadius ));
-    ctx.lineTo(250 - 4, 250 - (outsideRadius ));
+    ctx.moveTo(250 + (outsideRadius + 10), 250 +8); // Punto superior del triángulo
+    ctx.lineTo(250 + (outsideRadius + 10), 250 -8); // Punto inferior del triángulo
+    ctx.lineTo(250 + (outsideRadius - 15), 250 );     // Punta del triángulo que apunta hacia la izquierda
     ctx.fill();
   }
 }
 
 function spin() {
-  spinAngleStart = Math.random() * 10 + 10;
   spinTime = 0;
-  spinTimeTotal = Math.random() * 3 + 4 * 1000;
+  spinTimeTotal = 2000; // Duración total del giro (4 segundos)
   rotateWheel();
 }
 
@@ -94,7 +91,13 @@ function rotateWheel() {
     stopRotateWheel();
     return;
   }
-  var spinAngle = spinAngleStart - easeOut(spinTime, 0, spinAngleStart, spinTimeTotal);
+
+  // Cálculo del ángulo objetivo para detenerse en el valor deseado
+  var targetAngle = (360 - (targetIndex * (arc * 180 / Math.PI))) % 360;
+  var currentAngle = (startAngle * 180 / Math.PI) % 360;
+  var remainingAngle = (targetAngle - currentAngle + 354) % 360;
+
+  var spinAngle = remainingAngle / ((spinTimeTotal - spinTime) / 15);
   startAngle += (spinAngle * Math.PI / 180);
   drawRouletteWheel();
   spinTimeout = setTimeout(rotateWheel, 30);
@@ -102,20 +105,7 @@ function rotateWheel() {
 
 function stopRotateWheel() {
   clearTimeout(spinTimeout);
-  var degrees = startAngle * 180 / Math.PI + 90;
-  var arcd = arc * 180 / Math.PI;
-  var index = Math.floor((360 - degrees % 360) / arcd);
-  ctx.save();
-  ctx.font = 'bold 30px Helvetica, Arial';
-  var text = options[index];
-  document.getElementById("result-text").innerText = text;
-  ctx.restore();
-}
-
-function easeOut(t, b, c, d) {
-  var ts = (t /= d) * t;
-  var tc = ts * t;
-  return b + c * (tc + -3 * ts + 3 * t);
+  document.getElementById("result-text").innerText = options[targetIndex];
 }
 
 drawRouletteWheel();

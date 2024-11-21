@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gambling 4ever - Inicio</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #1e1e1e;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .home-container {
+            background: #333;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+            padding: 40px;
+            text-align: center;
+            width: 90%;
+            max-width: 600px;
+        }
+        .home-container h1 {
+            color: #D32F2F;
+            margin-bottom: 30px;
+        }
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #D32F2F;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            font-size: 0.9rem;
+        }
+        .btn:hover {
+            background-color: #B71C1C;
+        }
+        .user-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .username-balance {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .username {
+            font-size: 1rem;
+        }
+        .balance {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="home-container">
+        <div class="user-info">
+            <div class="username-balance">
+                <span class="username">{{ nombre_usuario or 'Invitado' }}</span>
+                <span class="balance">Balance: ${{ saldo_usuario or '0.00' }}</span>
+            </div>
+            <div>
+                <a href=login.html class=btn>Cerrar Sesión</a>
+            </div>
+        </div>
+        <h1>Gambling 4ever</h1>
+        <div class="action-buttons">
+            <a href=creategames.html  class="btn">Crear Juego</a>
+            <a href=availablegames.html  class="btn">Ver Juegos Disponibles</a>
+        </div>
+    </div>
+</body>
+</html>
