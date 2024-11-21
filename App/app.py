@@ -175,6 +175,22 @@ def crearDB():
             form = request.form
         )
 
+
+@app.route("/games")
+def games():
+    if 'jwt' not in session:
+        return redirect(url_for('index'))
+    
+    return render_template("availablegames.html", juegos = operacionesDB.get_games_avaiable())
+
+@app.route("/game/<id>")
+def game():
+    if 'jwt' not in session:
+        return redirect(url_for('index'))
+    
+    return render_template("availablegames.html")
+
+
 @app.route("/logout")
 def cerrarSesion():
     session.clear()

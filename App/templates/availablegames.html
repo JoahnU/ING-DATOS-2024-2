@@ -82,20 +82,16 @@
         </thead>
         <tbody>
             <!-- Aquí se insertarán las filas dinámicamente -->
-            <tr>
-                <td>Ruleta de la Fortuna</td>
-                <td>$10</td>
-                <td>18:00</td>
-                <td>5/10</td>
-                <td><a href="{{ url_for('join_game', game_id=1) }}">Unirse</a></td>
-            </tr>
-            <tr>
-                <td>Ruleta Relámpago</td>
-                <td>$25</td>
-                <td>20:00</td>
-                <td>8/10</td>
-                <td><a href="{{ url_for('join_game', game_id=2) }}">Unirse</a></td>
-            </tr>
+            {% for juego in juegos %}
+                <tr>
+                    <td>{{ juego.game_name }}</td>
+                    <td>${{ juego.min_apuesta }}</td>
+                    <td>{{ juego.hora_juego }}</td>
+                    <td>5/{{ juego.capacidad }}</td>
+                    <td><a href="{{ url_for('game', id= juego.game_id) }}">Unirse</a></td>
+                </tr>
+            {% endfor %}
+        
             <!-- Más filas según los datos -->
         </tbody>
     </table>

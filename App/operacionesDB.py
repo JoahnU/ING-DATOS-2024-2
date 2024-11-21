@@ -1,6 +1,9 @@
 from models import *
 import hashlib
 
+from sqlalchemy import Date, cast
+from datetime import date
+
 
 from sqlalchemy.orm import sessionmaker
 Session = sessionmaker(bind=engine)
@@ -80,6 +83,14 @@ def get_games_by_player(session, player_name):
     
     return player_games
 
+
+def get_games_avaiable():
+    # Query para buscar los juegos de la fecha actual
+    player_games = (
+        session.query(Juegos)
+        .filter(cast(Juegos.fecha_creacion,Date) == date.today()).all()
+    )
+    return player_games
 
 
 #update 
