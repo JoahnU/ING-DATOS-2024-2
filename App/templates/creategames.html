@@ -73,7 +73,7 @@
 
 <div class="form-container">
     <h2>Crear Juego de Ruleta</h2>
-    <form action="{{ url_for('create_roulette') }}" method="POST">
+    <form action="{{ url_for('crearDB') }}" method="POST">
         <div>
             <label for="game_name">Nombre del Juego</label>
             <input type="text" id="game_name" name="game_name" required placeholder="Ingresa el nombre del juego">
@@ -92,7 +92,10 @@
         </div>
         <button type="submit">Crear Juego</button>
     </form>
-    <p><a href="{{ url_for('admin_dashboard') }}" style="color: #D32F2F;">Volver al Panel de Administración</a></p>
+    <p><a href="{{ url_for('index') }}" style="color: #D32F2F;">Volver al Panel de Administración</a></p>
+    {% if error %}
+        {{ error }}
+    {% endif %}
 </div>
 
 </body>

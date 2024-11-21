@@ -20,13 +20,13 @@ def registrarUsuario(name, email, password):
     return nuevoJugador
 
 
-def crearjuegos(min_apuesta,capacidad, creator_id ):
+def crearjuegos(nombre, hora, min_apuesta,capacidad, creator_id ):
     nuevojuego = Juegos(
-        total_bet = 0,
         min_apuesta= min_apuesta,
         capacidad = capacidad,
-        creador_id = creator_id
-
+        creador_id = creator_id,
+        hora_juego = hora, 
+        game_name = nombre
     )
     session.add(nuevojuego)
     session.commit()

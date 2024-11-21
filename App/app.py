@@ -36,7 +36,6 @@ app = Flask(__name__)
 # Añadiendo palabra clave para variables de sesión
 app.secret_key = 'Gambling4ever'
 
-
 # Middleware para cerrar sesiones expiradas
 @app.before_request
 def middleware():
@@ -68,6 +67,7 @@ def index():
         if user['rol'] == 1:
             return render_template("indexAdmin.html", user = user)
         return render_template("index.html", user = user)
+    # Si no hay web token redireccionamos al login
     return redirect(url_for('login'))
 
 # Login 
@@ -109,6 +109,7 @@ def login_in():
 def register():
     return render_template("register.html")
 
+
 @app.route("/register", methods = ['POST'])
 def register_in():
     # Verificando que las contraseñas sean correctas
@@ -138,9 +139,41 @@ def register_in():
         operacionesDB.session.rollback()
         return render_template("register.html", error = e)
     
-@app.route("/html/<html>")
-def html(html):
-    return render_template(f"{html}.html")
+
+    
+@app.route("/crear", methods = ['GET'])
+def crearJuegos():
+    if 'jwt' not in session:
+        return redirect(url_for('index'))
+    
+    return render_template("creategames.html")
+
+@app.route("/crear",methods = ['POST'])
+def crearDB():
+    if 'jwt' not in session:
+        return redirect(url_for('index'))
+    
+    user = jwt.decode (
+        session['jwt'], 
+        secret_key, 
+        algorithms=["HS256"]
+    )
+    
+    try:
+        operacionesDB.crearjuegos(
+            request.form.get('game_name'),
+            request.form.get('game_time'),
+            request.form.get('min_bet'),
+            request.form.get('capacity'),
+            user['id']
+            )
+        return redirect(url_for('index'))
+    except SQLAlchemyError as e: 
+        return render_template(
+            "creategames.html", 
+            error = e, 
+            form = request.form
+        )
 
 @app.route("/logout")
 def cerrarSesion():
