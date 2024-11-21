@@ -58,7 +58,7 @@ function drawRouletteWheel() {
 
       ctx.save();
       ctx.fillStyle = "white";
-      ctx.translate(250 + Math.cos(angle + arc / 2) * textRadius,
+      ctx.translate(250 + Math.cos(angle + arc / 2) * textRadius, 
                     250 + Math.sin(angle + arc / 2) * textRadius);
       ctx.rotate(angle + arc / 2 + Math.PI / 2);
       var text = options[i];
@@ -119,3 +119,4 @@ function easeOut(t, b, c, d) {
 }
 
 drawRouletteWheel();
+
