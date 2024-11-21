@@ -12,7 +12,7 @@ class Jugador(Base):
     player_id = Column(Integer, primary_key=True, autoincrement=True)
     user_name = Column(String(100), nullable=False)
     email_address = Column(String(150), nullable=False, unique=True)
-    password = Column(String(100), nullable=False)
+    password = Column(String(256), nullable=False)
     balance = Column(DECIMAL(10, 2), default=0.00)
     referral_id = Column(Integer, ForeignKey("jugador.player_id", ondelete="SET NULL"))
     
@@ -34,6 +34,8 @@ class Juegos(Base):
     hora_juego = Column(Time, nullable=False)
     capacidad = Column(Integer, nullable=False)
     creador_id = Column(Integer, ForeignKey("jugador.player_id", ondelete="CASCADE"), nullable=False)
+    resultado = Column(Integer, default=-1)
+    color = Column(String, default = " ")
     
     # Relaciones
     creador = relationship("Jugador", back_populates="juegos_creados")
@@ -82,5 +84,5 @@ class Compra(Base):
 
 
 # Crear el motor y las tablas (si es necesario)
-engine = create_engine("postgresql+psycopg2://postgres:password@localhost/gambling")
+engine = create_engine("postgresql+psycopg2://postgres:Arg1812@localhost/gambling")
 Base.metadata.create_all(engine)
