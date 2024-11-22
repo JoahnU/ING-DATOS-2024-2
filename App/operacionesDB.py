@@ -71,6 +71,8 @@ def rjugador_email(email_address):
 
 
 
+
+
 def get_games_by_player(session, player_name):
     
     # Query para buscar los juegos creados por el jugador

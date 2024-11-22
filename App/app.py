@@ -58,15 +58,18 @@ def middleware():
 def index():
     # Dependiendo si tiene el web token
     if 'jwt' in session:
-        user = jwt.decode (
+        token = jwt.decode (
                 session['jwt'], 
                 secret_key, 
                 algorithms=["HS256"]
         )
+
+        user = operacionesDB.rjugador_id(token['id'])
+
         # Renderizando template con payload
-        if user['rol'] == 1:
-            return render_template("indexAdmin.html", user = user)
-        return render_template("index.html", user = user)
+        if token['rol'] == 1:
+            return render_template("homepage.html", user = user)
+        return render_template("homepage.html", user = user)
     # Si no hay web token redireccionamos al login
     return redirect(url_for('login'))
 
@@ -142,7 +145,7 @@ def register_in():
 
     
 @app.route("/crear", methods = ['GET'])
-def crearJuegos():
+def crear():
     if 'jwt' not in session:
         return redirect(url_for('index'))
     
@@ -184,15 +187,23 @@ def games():
     return render_template("availablegames.html", juegos = operacionesDB.get_games_avaiable())
 
 @app.route("/game/<id>")
-def game():
-    if 'jwt' not in session:
-        return redirect(url_for('index'))
-    
-    return render_template("availablegames.html")
+def game(id):
+    if 'jwt' in session:
+        token = jwt.decode (
+                session['jwt'], 
+                secret_key, 
+                algorithms=["HS256"]
+        )
 
+        user = operacionesDB.rjugador_id(token['id'])
+
+        # Renderizando template con payload
+        return render_template("game.html", user = user)
+    # Si no hay web token redireccionamos al login
+    return redirect(url_for('login'))
 
 @app.route("/logout")
-def cerrarSesion():
+def logout():
     session.clear()
     return redirect(url_for('index'))
 

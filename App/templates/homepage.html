@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gambling 4ever - Inicio</title>
+    <title>Gambling4ever - Inicio</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -72,17 +72,18 @@
     <div class="home-container">
         <div class="user-info">
             <div class="username-balance">
-                <span class="username">{{ nombre_usuario or 'Invitado' }}</span>
-                <span class="balance">Balance: ${{ saldo_usuario or '0.00' }}</span>
+                <span class="username">{{ user.user_name }}</span>
+                <span class="balance">Balance: ${{ user.balance }}</span>
             </div>
             <div>
-                <a href=login.html class=btn>Cerrar Sesión</a>
+                <a href="{{ url_for('logout') }}" class=btn>Cerrar Sesión</a>
             </div>
         </div>
-        <h1>Gambling 4ever</h1>
+        <h1>Gambling4ever</h1>
         <div class="action-buttons">
-            <a href=creategames.html  class="btn">Crear Juego</a>
-            <a href=availablegames.html  class="btn">Ver Juegos Disponibles</a>
+            <a href="{{ url_for('crear') }}" class="btn">Crear Juego</a>
+            <a href="{{ url_for('games') }}"  class="btn">Ver Juegos Disponibles</a>
+            <a href="{{ url_for('games') }}"  class="btn">Obtener monedas</a>
         </div>
     </div>
 </body>

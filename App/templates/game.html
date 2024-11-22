@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roulette</title>
+    <link rel="stylesheet" href="{{  url_for('static', filename='initial.css')  }}">
+</head>
+<body>
+  <nav>
+    <div class="nav-left">
+      <h1>GAMBLING4EVER</h1>
+    </div>
+    <div class="nav-mid">
+      <h1>Roulette</h1>
+    </div>
+    <div class="nav-right">
+    </div>
+  </nav>
+
+  <div class="block-ruleta">
+     <canvas id="canvas" width="500" height="500"></canvas>
+     <button id="spin">Spin the Wheel!</button>
+  </div>
+  
+  <div id="result"><span id="result-text">-</span></div>
+
+  <!-- Betting Interface -->
+  <div class="container">
+    <!-- Betting input section -->
+    <div class="bet-input">
+        <label for="betAmount"></label><input type="number" placeholder="Your bet" id="betAmount">
+      <button>+10</button>
+      <button>+50</button>
+      <button>+100</button>
+      <button>1/2</button>
+      <button>x2</button>
+      <button>Max</button>
+      <button>Auto Bet</button>
+    </div>
+
+    <!-- Betting options -->
+    <div class="bet-options">
+      <!-- 1 to 17 section -->
+      <div class="bet-card red">
+        <div class="title">1 to 17</div>
+        <div class="profit">Potential Profit: $0.00</div>
+        <div class="players">Players: 0</div>
+      </div>
+
+      <!-- 0 section -->
+      <div class="bet-card green">
+        <div class="title">0</div>
+        <div class="profit">Potential Profit: $0.00</div>
+        <div class="players">Players: 3</div>
+      </div>
+
+      <!-- 18 to 36 section -->
+      <div class="bet-card gray">
+        <div class="title">18 to 36</div>
+        <div class="profit">Potential Profit: $0.00</div>
+        <div class="players">Players: 0</div>
+      </div>
+    </div>
+  </div>
+  <script src="{{  url_for('static', filename='initial.js')  }}"></script>
+</body>
+</html>
