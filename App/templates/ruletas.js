@@ -7,6 +7,8 @@ var spinTimeTotal = 0;
 var ctx;
 var targetValue = "32";
 var targetIndex = options.indexOf(targetValue);
+var ranGiro = Math.ceil(Math.random() * (6 - 3)) + 3;
+
 
 document.getElementById("spin").addEventListener("click", spin);
 
@@ -88,7 +90,7 @@ function rotateWheel() {
     }
      
     var targetAngle = (360 - (targetIndex * (arc * 180 / Math.PI))) % 360;
-    var totalRotations = 8 * 360;
+    var totalRotations = ranGiro * 360;
     var progress = spinTime / spinTimeTotal;
     var easedProgress = easeOut(spinTime, 0, 1, spinTimeTotal);
     var totalAngleToRotate = totalRotations + targetAngle;
