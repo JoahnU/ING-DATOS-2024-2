@@ -1,6 +1,7 @@
 from sqlalchemy import (
     create_engine, Column, Integer, String, ForeignKey, DECIMAL, Date, Time, TIMESTAMP, Boolean, func, DateTime
 )
+from sqlalchemy.dialects.mysql import VARCHAR
 from sqlalchemy.orm import relationship, declarative_base
 
 Base = declarative_base()
@@ -85,6 +86,75 @@ class Compra(Base):
     divisa = relationship("Divisas", back_populates="compras")
 
 
+#Creando las tablas del cubo OLAP
+
+class Hechos_Transacciones(Base):
+    __tablename__ = "hechos_transacciones"
+    transaccion_id = Column(Integer, primary_key=True, autoincrement=True)
+    player_id = Column(Integer,ForeignKey("Dim_Jugador.dim_jugador_id", ondelete="CASCADE"), nullable=False, autoincrement=True)
+    game_id = Column(Integer, ForeignKey("Dim_Juego.dim_juego_id", ondelete="CASCADE"))
+    div_id = Column(Integer,ForeignKey("Dim_Divisas.dim_divisas_id", ondelete="CASCADE"))
+    cantidad = Column(DECIMAL(10, 2))
+    tipo_transaccion = Column(VARCHAR(50), nullable=False)
+    tiempo_id = Column(Integer,ForeignKey("Dim_Tiempo.dim_tiempo_id", ondelete="CASCADE"), nullable=False)
+
+    # Relaciones con las dimensiones
+    jugador = relationship("DimJugador", backref="hechos_transacciones")
+    juego = relationship("DimJuego", backref="hechos_transacciones")
+    divisa = relationship("DimDivisas", backref="hechos_transacciones")
+    tiempo = relationship("DimTiempo", backref="hechos_transacciones")
+
+class Dim_Jugador(Base):
+    __tablename__ = "Dim_Jugador"
+    dim_jugador_id = Column(Integer, primary_key=True, autoincrement=True)
+    player_id = Column(Integer, nullable=False)
+    user_name = Column(VARCHAR(100), nullable=False)
+    email_address = Column(VARCHAR(150), nullable=False)
+    balance = Column(DECIMAL(10, 2), nullable=False)
+    referral_id = Column(Integer, ForeignKey("Dim_Jugador.dim_jugador_id", ondelete="CASCADE"))
+    fecha_inicio = Column(DateTime(timezone=True), nullable=False)
+    fecha_fin = Column(DateTime(timezone=True))
+    estado_actual = Column(Boolean, nullable=False)
+
+    # Relación recursiva para el jugador que refiere
+    referido_por = relationship("Dim_Jugador", remote_side=[dim_jugador_id])
+
+class Dim_Juego(Base):
+    __tablename__ = "Dim_Juego"
+
+    dim_juego_id = Column(Integer, primary_key=True, autoincrement=True)
+    game_id = Column(Integer, nullable=False)
+    min_apuesta = Column(DECIMAL(10, 2), nullable=False)
+    capacidad = Column(Integer, nullable=False)
+    total_bet = Column(DECIMAL(10, 2))
+    fecha_inicio = Column(DateTime(timezone=True), nullable=False)
+    fecha_fin = Column(DateTime(timezone=True))
+    estado_actual = Column(Boolean, nullable=False)
+
+class Dim_Divisas(Base):
+    __tablename__ = "Dim_Divisas"
+
+    dim_divisas_id = Column(Integer, primary_key=True, autoincrement=True)
+    div_id = Column(Integer, nullable=False)
+    nombre_divisa = Column(VARCHAR(100), nullable=False)
+    simbolo_divisa = Column(VARCHAR(10), nullable=False)
+    valor_en_monedas = Column(DECIMAL(10, 4), nullable=False)
+    fecha_inicio = Column(DateTime, nullable=False)
+    fecha_fin = Column(DateTime)
+    estado_actual = Column(Boolean, nullable=False)
+
+class Dim_Tiempo(Base):
+    __tablename__ = "Dim_Tiempo"
+
+    dim_tiempo_id = Column(Integer, primary_key=True, autoincrement=True)
+    fecha = Column(Date, nullable=False)
+    año = Column(Integer, nullable=False)
+    mes = Column(Integer, nullable=False)
+    dia = Column(Integer, nullable=False)
+    dia_semana = Column(VARCHAR(20), nullable=False)
+    semana = Column(Integer, nullable=False)
+    trimestre = Column(Integer, nullable=False)
+
 # Crear el motor y las tablas (si es necesario)
-engine = create_engine("postgresql+psycopg2://postgres:Arg1812@localhost/gambling")
+engine = create_engine("postgresql+psycopg2://postgres:123456789@localhost/Gambling4ever")
 Base.metadata.create_all(engine)
