@@ -230,8 +230,8 @@ def buyCurrency():
     try:
         operacionesDB.compras(
             token['id'], 
-            request.form.get('currency'), 
-            request.form.get('cantidad')
+            int(request.form.get('currency')), 
+            float(request.form.get('cantidad'))
             )
         
         return redirect(url_for('index'))

@@ -1,7 +1,7 @@
 from database.models import *
 import hashlib
 
-from sqlalchemy import Date, cast
+from sqlalchemy import Date, cast, text
 from datetime import date
 
 
@@ -57,20 +57,19 @@ def nuevapuesta(p_id, g_id, valor, numero):
     session.commit()
     return nuevapuesta
 
-def compras(player_id, div_id, cantidad):
-
-    nuevacompra = Compra(
-        player_id= player_id,
-        div_id= div_id,
-        cantidad= cantidad,
-
-    )
-    session.add(nuevacompra)
-    session.commit()
-    return nuevacompra
+def compras(player_id, div_id, cantidad):    
+    with engine.begin() as connection:
+        connection.execute(
+            text("CALL buyCurrency(:player, :divisa, :quantity);"),
+            {
+                "player": player_id,
+                "divisa": div_id,
+                "quantity": cantidad,
+            },
+        ).fetchone()
+        return True
 
 #read
-
 def rjugador_id(player_id):
     player = session.query(Jugador).filter(Jugador.player_id==player_id).first()
     return player
