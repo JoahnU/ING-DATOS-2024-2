@@ -23,6 +23,17 @@ def registrarUsuario(name, email, password):
     return nuevoJugador
 
 
+def registrarUsuarioReferido(name, email, password, id):
+    nuevoJugador = Jugador(
+        user_name = name, 
+        email_address = email,
+        password = hashlib.sha256(password.encode('utf-8')).hexdigest(),
+        referral_id = id
+    )
+    session.add(nuevoJugador)
+    session.commit()
+    return nuevoJugador
+
 def crearjuegos(nombre, hora, min_apuesta,capacidad, creator_id ):
     nuevojuego = Juegos(
         min_apuesta= min_apuesta,
@@ -50,7 +61,7 @@ def compras(player_id, div_id, cantidad):
 
     nuevacompra = Compra(
         player_id= player_id,
-        div_id= 1,
+        div_id= div_id,
         cantidad= cantidad,
 
     )
@@ -70,6 +81,9 @@ def rjugador_email(email_address):
     return player
 
 
+
+def get_game_by_id(id):
+    return session.query(Juegos).filter(Juegos.game_id==id).first()
 
 
 
@@ -105,9 +119,8 @@ def update_player_balance(session, player_name, amount):
         # Actualizar el balance del jugador
         player.balance += amount
         session.commit()
-        return f"El balance de {player_name} se actualizó a {player.balance:.2f}."
-    else:
-        return f"No se encontró un jugador con el nombre '{player_name}'."
+        return True
+    else: False
 
 
 #delete
@@ -145,7 +158,7 @@ def get_player_referrals(session, player_name):
 
 #juegos y sus apuestas
 
-def get_game_bets(session, game_id):
+def get_game_bets(game_id):
     
     # Buscar el juego por su ID
     game = session.query(Juegos).filter(Juegos.game_id == game_id).first()
@@ -157,7 +170,7 @@ def get_game_bets(session, game_id):
         
         return bets
     else:
-        return f"No se encontró un juego con el ID {game_id}."
+        return None
 
 
 

@@ -78,7 +78,7 @@ class Compra(Base):
     player_id = Column(Integer, ForeignKey("jugador.player_id", ondelete="CASCADE"), primary_key=True)
     div_id = Column(Integer, ForeignKey("divisas.div_id", ondelete="CASCADE"), primary_key=True)
     cantidad = Column(DECIMAL(10, 2), nullable=False)
-    fecha = Column(TIMESTAMP, primary_key=True)
+    fecha = Column(TIMESTAMP, primary_key=True, server_default=func.now())
     
     # Relaciones
     jugador = relationship("Jugador", back_populates="compras")

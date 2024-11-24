@@ -197,10 +197,93 @@ def game(id):
 
         user = operacionesDB.rjugador_id(token['id'])
 
+        try:
+            game = operacionesDB.get_game_by_id(id)
+            if game is None: 
+                redirect(url_for('games')) 
+        except SQLAlchemyError: 
+            redirect(url_for('games'))
+
         # Renderizando template con payload
-        return render_template("game.html", user = user)
+        return render_template("game.html", user = user, game = game)
     # Si no hay web token redireccionamos al login
     return redirect(url_for('login'))
+
+@app.route("/currency", methods=['GET'])
+def getCurrency():
+    if 'jwt' not in session:
+        return redirect(url_for('index'))
+    
+    return render_template("buycurrency.html")
+
+@app.route("/currency", methods=['POST'])
+def buyCurrency(): 
+    if 'jwt' not in session:
+        return redirect(url_for('index'))
+    
+    token = jwt.decode (
+                session['jwt'], 
+                secret_key, 
+                algorithms=["HS256"]
+        )
+    
+    try:
+        operacionesDB.compras(
+            token['id'], 
+            request.form.get('currency'), 
+            request.form.get('cantidad')
+            )
+        
+        return redirect(url_for('index'))
+    except SQLAlchemyError as e: 
+        operacionesDB.session.rollback()
+        return render_template("buycurrency.html", error = e)    
+
+@app.route("/referido/<id>")
+def referral(id): 
+    if 'jwt' in session:
+        token = jwt.decode (
+                session['jwt'], 
+                secret_key, 
+                algorithms=["HS256"]
+        )
+
+        user = operacionesDB.rjugador_id(token['id'])
+
+        return render_template('getreferrallink.html', user = user)
+    return render_template("registroreferido.html", id = id)
+
+@app.route("/register/<id>", methods = ['POST'])
+def register_referral(id):
+    # Verificando que las contraseñas sean correctas
+    if request.form.get('password') != request.form.get('confirmPassword'):
+        return render_template("register.html", error = 'Las contraseñas no coinciden')
+
+    try:
+        jugador = operacionesDB.registrarUsuarioReferido(
+            request.form.get('username'), 
+            request.form.get('email'),
+            request.form.get('password'),
+            id
+        )
+        
+        payload = {
+            "id": jugador.player_id,
+            "nombre": jugador.user_name,
+            "rol": 'player',
+            "crDate": str(datetime.now()),
+            "expDate": str(datetime.now() + timedelta(days=2))
+        }
+
+        session['jwt'] = jwt.encode(payload, secret_key, algorithm="HS256")
+
+        return redirect(url_for('index'))
+
+    except SQLAlchemyError as e: 
+        operacionesDB.session.rollback()
+        return render_template("register.html", error = e)
+    
+
 
 @app.route("/logout")
 def logout():

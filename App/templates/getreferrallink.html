@@ -47,6 +47,7 @@
         }
         .btn:hover {
             background-color: #B71C1C;
+            cursor: pointer;
         }
         .user-info {
             display: flex;
@@ -66,6 +67,23 @@
             color: #4CAF50;
             font-weight: bold;
         }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid #666;
+            border-radius: 5px;
+            background-color: #222;
+            color: white;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+        input:focus {
+            border-color: #D32F2F;
+            background-color: #333;
+            outline: none;
+        }
     </style>
 </head>
 <body>
@@ -73,19 +91,27 @@
         <div class="user-info">
             <div class="username-balance">
                 <span class="username">{{ user.user_name }}</span>
-                <span class="balance">Balance: ${{ user.balance }}</span>
-            </div>
-            <div>
-                <a href="{{ url_for('logout') }}" class=btn>Cerrar Sesión</a>
             </div>
         </div>
-        <h1>Gambling4ever</h1>
+        <h1>Link pafa referir </h1>
         <div class="action-buttons">
-            <a href="{{ url_for('crear') }}" class="btn">Crear Juego</a>
-            <a href="{{ url_for('games') }}"  class="btn">Ver Juegos Disponibles</a>
-            <a href="{{ url_for('getCurrency') }}"  class="btn">Obtener fichas</a>
-            <a href="{{ url_for('referral', id = user.player_id ) }}"  class="btn">Link de referido</a>
+            <input type="text" value="http://localhost:5000{{url_for('referral', id = user.player_id )}}" id="myInput">
+            <button onclick="myFunction()", class="btn">Copy text</button>
         </div>
+        <p><a href="{{ url_for('index') }}" style="color: #D32F2F;">Volver</a></p>
     </div>
+    <script>
+        function myFunction() {
+            // Get the text field
+            var copyText = document.getElementById("myInput");
+
+            // Select the text field
+            copyText.select();
+            copyText.setSelectionRange(0, 99999); // For mobile devices
+
+            // Copy the text inside the text field
+            navigator.clipboard.writeText(copyText.value);
+        }
+    </script>
 </body>
 </html>

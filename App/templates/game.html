@@ -10,11 +10,14 @@
   <nav>
     <div class="nav-left">
       <h1>GAMBLING4EVER</h1>
+
     </div>
     <div class="nav-mid">
-      <h1>Roulette</h1>
+      <h1>{{ game.game_name }}</h1>
     </div>
     <div class="nav-right">
+        <a class="button-register" href="{{ url_for ('games') }}">Regresar</a>
+
     </div>
   </nav>
 
