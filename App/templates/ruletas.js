@@ -92,21 +92,8 @@ function rotateWheel() {
     var progress = spinTime / spinTimeTotal;
     var easedProgress = easeOut(spinTime, 0, 1, spinTimeTotal);
     var totalAngleToRotate = totalRotations + targetAngle;
-    var currentRotation = totalAngleToRotate * (1 - easedProgress) + 15.2;
+    var currentRotation = totalAngleToRotate * (1 - easedProgress) - targetAngle +5;
 
-    console.log({
-      'Target Index': targetIndex,
-      'Arc (en radianes)': arc,
-      'Target Angle': targetAngle,
-      'Total Rotations': totalRotations,
-      'Spin Time': spinTime,
-      'Progress': progress,
-      'Eased Progress': easedProgress,
-      'Total Angle To Rotate': totalAngleToRotate,
-      'Current Rotation': currentRotation,
-      'Start Angle (antes de actualizar)': startAngle,
-      
-  });
 
     startAngle = -(currentRotation * Math.PI / 180);
     drawRouletteWheel();
