@@ -8,6 +8,7 @@ var ctx;
 var targetValue = "32";
 var targetIndex = options.indexOf(targetValue);
 var ranGiro = Math.ceil(Math.random() * (6 - 3)) + 3;
+var ranAngle = Math.ceil(Math.random() * (9 - 1)) + 1;
 
 
 document.getElementById("spin").addEventListener("click", spin);
@@ -94,7 +95,7 @@ function rotateWheel() {
     var progress = spinTime / spinTimeTotal;
     var easedProgress = easeOut(spinTime, 0, 1, spinTimeTotal);
     var totalAngleToRotate = totalRotations + targetAngle;
-    var currentRotation = totalAngleToRotate * (1 - easedProgress) - targetAngle +5;
+    var currentRotation = totalAngleToRotate * (1 - easedProgress) - targetAngle + ranAngle;
 
 
     startAngle = -(currentRotation * Math.PI / 180);
@@ -106,6 +107,8 @@ function rotateWheel() {
 function stopRotateWheel() {
     clearTimeout(spinTimeout);
     document.getElementById("result-text").innerText = options[targetIndex];
+    ranGiro = Math.ceil(Math.random() * (6 - 3)) + 3;
+    ranAngle = Math.ceil(Math.random() * (9 - 1)) + 1;
 }
 
 drawRouletteWheel();
