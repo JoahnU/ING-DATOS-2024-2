@@ -7,7 +7,7 @@ from flask import (
 import hashlib
 
 # Operaciones con bases de datos
-import operacionesDB as operacionesDB
+import database.operacionesDB as operacionesDB
 from sqlalchemy.exc import SQLAlchemyError
 
 # Para autenticación
@@ -214,7 +214,7 @@ def getCurrency():
     if 'jwt' not in session:
         return redirect(url_for('index'))
     
-    return render_template("buycurrency.html")
+    return render_template("buycurrency.html", divisas = operacionesDB.get_divisas())
 
 @app.route("/currency", methods=['POST'])
 def buyCurrency(): 
@@ -237,7 +237,7 @@ def buyCurrency():
         return redirect(url_for('index'))
     except SQLAlchemyError as e: 
         operacionesDB.session.rollback()
-        return render_template("buycurrency.html", error = e)    
+        return render_template("buycurrency.html", divisas = operacionesDB.get_divisas(), error = e)    
 
 @app.route("/referido/<id>")
 def referral(id): 
@@ -257,7 +257,7 @@ def referral(id):
 def register_referral(id):
     # Verificando que las contraseñas sean correctas
     if request.form.get('password') != request.form.get('confirmPassword'):
-        return render_template("register.html", error = 'Las contraseñas no coinciden')
+        return render_template("registroreferido.html", id=id, error = 'Las contraseñas no coinciden')
 
     try:
         jugador = operacionesDB.registrarUsuarioReferido(
@@ -281,7 +281,7 @@ def register_referral(id):
 
     except SQLAlchemyError as e: 
         operacionesDB.session.rollback()
-        return render_template("register.html", error = e)
+        return render_template("registroreferido.html", id=id, error = e)
     
 
 

@@ -109,12 +109,14 @@
 
 <div class="form-container">
     <h2>Compra de fichas</h2>
-    <form action="{{ url_for('buyCurrency') }}" method="POST">
+    <form action="{{ url_for('crearDB') }}" method="POST">
         <div>
             <label for="currency">Moneda </label>
             <select name="currency" id="currency" required>
                 <option value="">---</option>
-                <option value="1">USD</option>
+                {% for divisa in divisas %}
+                    <option value="{{divisa.div_id}}">{{divisa.simbolo_divisa}} - {{divisa.nombre_divisa}}</option>
+                {% endfor %}
             </select>
         </div>
         <div>

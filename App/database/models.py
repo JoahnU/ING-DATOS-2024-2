@@ -99,10 +99,10 @@ class Hechos_Transacciones(Base):
     tiempo_id = Column(Integer,ForeignKey("Dim_Tiempo.dim_tiempo_id", ondelete="CASCADE"), nullable=False)
 
     # Relaciones con las dimensiones
-    jugador = relationship("DimJugador", backref="hechos_transacciones")
-    juego = relationship("DimJuego", backref="hechos_transacciones")
-    divisa = relationship("DimDivisas", backref="hechos_transacciones")
-    tiempo = relationship("DimTiempo", backref="hechos_transacciones")
+    jugador = relationship("Dim_Jugador", backref="hechos_transacciones")
+    juego = relationship("Dim_Juego", backref="hechos_transacciones")
+    divisa = relationship("Dim_Divisas", backref="hechos_transacciones")
+    tiempo = relationship("Dim_Tiempo", backref="hechos_transacciones")
 
 class Dim_Jugador(Base):
     __tablename__ = "Dim_Jugador"
@@ -156,5 +156,5 @@ class Dim_Tiempo(Base):
     trimestre = Column(Integer, nullable=False)
 
 # Crear el motor y las tablas (si es necesario)
-engine = create_engine("postgresql+psycopg2://postgres:123456789@localhost/Gambling4ever")
+engine = create_engine("postgresql+psycopg2://postgres:Arg1812@localhost/gambling2")
 Base.metadata.create_all(engine)

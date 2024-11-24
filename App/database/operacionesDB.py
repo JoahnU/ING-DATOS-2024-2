@@ -1,4 +1,4 @@
-from models import *
+from database.models import *
 import hashlib
 
 from sqlalchemy import Date, cast
@@ -214,3 +214,7 @@ def get_available_games(session):
     ]
     
     return result
+
+
+def get_divisas(): 
+    return session.query(Divisas).all()
