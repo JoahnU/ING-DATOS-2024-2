@@ -5,13 +5,38 @@ var spinTimeout = null;
 var spinTime = 0;
 var spinTimeTotal = 0;
 var ctx;
-var targetValue = "32";
+var targetValue = "-1";
 var targetIndex = options.indexOf(targetValue);
 var ranGiro = Math.ceil(Math.random() * (6 - 3)) + 3;
 var ranAngle = Math.ceil(Math.random() * (9 - 1)) + 1;
 
+const button = document.getElementById('spin')
 
-document.getElementById("spin").addEventListener("click", spin);
+function searchResult(){
+    fetch("{{ url_for('result', id = id) }}")
+    .then(res => {
+        return res.json()
+    })
+    .then((response) => {
+        if (response["value"] != "-1") {
+            targetValue = response["value"];
+            targetIndex = options.indexOf(targetValue);
+            button.style.display = 'None'; 
+            spin();
+            
+        }
+        else {
+            button.innerText = 'No hay resultado aún'; 
+            setTimeout(()=>{
+                button.innerText = 'Spin the Wheel!'; 
+            }, 4000)
+        }
+    })
+}
+
+
+button.addEventListener("click", searchResult)
+
 
 function getColor(item, maxitem) {
     const redNumbers = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
@@ -112,3 +137,5 @@ function stopRotateWheel() {
 }
 
 drawRouletteWheel();
+
+searchResult()

@@ -223,3 +223,22 @@ AFTER INSERT
 ON Divisas
 FOR EACH ROW
 EXECUTE FUNCTION crear_dim_divisas();
+
+-- Función para obtener resultado de un juego 
+CREATE OR REPLACE FUNCTION getResult(id INT) RETURNS INT AS $$
+DECLARE 
+	resultado_valor INT;
+	horaJuego TIME;
+BEGIN 
+	resultado_valor := (SELECT resultado FROM juegos WHERE game_id = id LIMIT 1);
+	horaJuego := (SELECT hora_juego FROM juegos WHERE game_id = id LIMIT 1);
+
+	IF resultado_valor = -1 AND horaJuego <= NOW()::TIME THEN
+		UPDATE juegos SET resultado = (RANDOM()*37)::int WHERE game_id = id;
+		resultado_valor := (SELECT resultado FROM juegos WHERE game_id = id LIMIT 1);
+	END IF;
+
+	RETURN resultado_valor;
+
+END;
+$$ LANGUAGE plpgsql;

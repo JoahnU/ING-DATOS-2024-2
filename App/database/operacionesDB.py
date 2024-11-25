@@ -69,6 +69,16 @@ def compras(player_id, div_id, cantidad):
             },
         )
         return True
+    
+def resultado(id): 
+    # Creando compra mediante procedimiento buyCurrency   
+    with engine.begin() as connection:
+        return connection.execute(
+            text("SELECT getResult(:id);"),
+            {
+                "id": id,
+            }
+        ).fetchone()[0]
 
 #read
 def rjugador_id(player_id):

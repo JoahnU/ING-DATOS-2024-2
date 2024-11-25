@@ -283,7 +283,15 @@ def register_referral(id):
         operacionesDB.session.rollback()
         return render_template("registroreferido.html", id=id, error = e)
     
-
+@app.route("/resultado/<id>")
+def result(id):
+    if 'jwt' not in session:
+        return jsonify({ "value": -1 })
+    return jsonify({ "value": str(operacionesDB.resultado(id))})
+    
+@app.route('/ruleta.js/<id>')
+def ruletaScript(id):
+    return render_template('js/ruletas.js', id = id), 200, {'Content-Type': 'application/javascript'}
 
 @app.route("/logout")
 def logout():
