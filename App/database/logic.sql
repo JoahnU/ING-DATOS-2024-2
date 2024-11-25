@@ -1,0 +1,225 @@
+CREATE OR REPLACE PROCEDURE buyCurrency(customer INTEGER, divisa INTEGER, quantity NUMERIC(10,2)) AS $$
+DECLARE
+    aumento NUMERIC;  
+	date_id INT;
+	id_player INT; 
+	divisa_id INT;
+BEGIN
+    -- Calculando aumento
+    aumento := quantity * (SELECT valor_en_monedas FROM divisas WHERE div_id = divisa);
+    
+    -- Insertando en tabla de compra
+    INSERT INTO compra 
+    VALUES (customer, divisa, quantity, NOW());
+
+    -- Añadiendo lo equivalente al valor comprado al balance
+    UPDATE jugador 
+    SET balance = balance + aumento
+    WHERE player_id = customer;
+
+	-- Obteniendo id de la dimension fecha, jugador y divisas
+	IF (SELECT COUNT(*) FROM "Dim_Tiempo" WHERE fecha = CURRENT_DATE) = 0 THEN 
+		PERFORM dim_tiempo();
+	END IF;
+
+	date_id := (SELECT dim_tiempo_id FROM "Dim_Tiempo" WHERE fecha = CURRENT_DATE LIMIT 1);
+	id_player := (SELECT dim_jugador_id FROM "Dim_Jugador" WHERE player_id = customer AND fecha_fin IS NULL LIMIT 1);
+	divisa_id := (SELECT dim_divisas_id FROM "Dim_Divisas" WHERE div_id = divisa  AND fecha_fin IS NULL LIMIT 1);
+	
+	-- Actualizando la tabla de hechos 
+	INSERT INTO hechos_transacciones (player_id, div_id, cantidad, tipo_transaccion, tiempo_id)
+	VALUES (id_player, divisa_id, quantity, 'Compra', date_id);
+
+	RETURN;
+END; 
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION dim_tiempo()
+RETURNS VOID AS $$
+DECLARE
+    current_date DATE;
+    year INT;
+    month INT;
+    day INT;
+    day_name VARCHAR(20);
+    week INT;
+    quarter INT;
+BEGIN
+    current_date := CURRENT_DATE;
+
+	-- Calculate derived values
+	year := EXTRACT(YEAR FROM current_date);
+	month := EXTRACT(MONTH FROM current_date);
+	day := EXTRACT(DAY FROM current_date);
+	day_name := TO_CHAR(current_date, 'FMDay');  -- Full day name
+	week := EXTRACT(WEEK FROM current_date);
+	quarter := EXTRACT(QUARTER FROM current_date);
+
+	-- Insert into Dim_Tiempo
+	INSERT INTO "Dim_Tiempo" (fecha, año, mes, dia, dia_semana, semana, trimestre)
+	VALUES (current_date, year, month, day, day_name, week, quarter);
+
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION crear_dim_divisas()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Insertar un nuevo registro en Dim_Divisas
+    INSERT INTO "Dim_Divisas" (div_id, nombre_divisa, simbolo_divisa, valor_en_monedas, fecha_inicio, estado_actual)
+    VALUES (
+        NEW.div_id, 
+        NEW.nombre_divisa, 
+        NEW.simbolo_divisa, 
+        NEW.valor_en_monedas, 
+        NOW(), 
+        TRUE
+    );
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_crear_dim_divisas
+AFTER INSERT
+ON Divisas
+FOR EACH ROW
+EXECUTE FUNCTION crear_dim_divisas();
+
+
+CREATE OR REPLACE FUNCTION crear_dim_jugador()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Insertar un nuevo registro en Dim_Jugador
+    INSERT INTO "Dim_Jugador" (player_id, user_name, email_address, balance, fecha_inicio, estado_actual)
+    VALUES (
+        NEW.player_id, 
+        NEW.user_name, 
+        NEW.email_address, 
+        NEW.balance, 
+        NOW(), 
+        TRUE
+    );
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_crear_dim_jugador
+AFTER INSERT
+ON Jugador
+FOR EACH ROW
+EXECUTE FUNCTION crear_dim_jugador();
+
+
+CREATE OR REPLACE FUNCTION actualizar_dim_jugador()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Cerrar el registro actual en Dim_Jugador
+    UPDATE "Dim_Jugador"
+    SET fecha_fin = NOW(), estado_actual = FALSE
+    WHERE player_id = NEW.player_id AND estado_actual = TRUE;
+
+    -- Insertar un nuevo registro en Dim_Jugador
+    INSERT INTO "Dim_Jugador" (player_id, user_name, email_address, balance, fecha_inicio, estado_actual)
+    VALUES (
+        NEW.player_id, 
+        NEW.user_name, 
+        NEW.email_address, 
+        NEW.balance, 
+        NOW(), 
+        TRUE
+    );
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_actualizar_dim_jugador
+AFTER UPDATE OF user_name, email_address, balance
+ON Jugador
+FOR EACH ROW
+EXECUTE FUNCTION actualizar_dim_jugador();
+
+
+CREATE OR REPLACE FUNCTION actualizar_dim_juegos()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Cerrar el registro actual en Dim_Juegos
+    UPDATE "Dim_Juegos"
+    SET fecha_fin = NOW(), estado_actual = FALSE
+    WHERE game_id = NEW.game_id AND estado_actual = TRUE;
+
+    -- Insertar un nuevo registro en Dim_Juegos
+    INSERT INTO "Dim_Juegos" (game_id, min_apuesta, capacidad, fecha_inicio, estado_actual)
+    VALUES (
+        NEW.game_id, 
+        NEW.min_apuesta, 
+        NEW.capacidad, 
+        NOW(), 
+        TRUE
+    );
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_actualizar_dim_juegos
+AFTER UPDATE OF min_apuesta, capacidad
+ON Juegos
+FOR EACH ROW
+EXECUTE FUNCTION actualizar_dim_juegos();
+
+CREATE OR REPLACE FUNCTION actualizar_dim_divisas()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Cerrar el registro actual en Dim_Divisas
+    UPDATE "Dim_Divisas"
+    SET fecha_fin = NOW(), estado_actual = FALSE
+    WHERE div_id = NEW.div_id AND estado_actual = TRUE;
+
+    -- Insertar un nuevo registro en Dim_Divisas
+    INSERT INTO "Dim_Divisas" (div_id, nombre_divisa, simbolo_divisa, valor_en_monedas, fecha_inicio, estado_actual)
+    VALUES (
+        NEW.div_id, 
+        NEW.nombre_divisa, 
+        NEW.simbolo_divisa, 
+        NEW.valor_en_monedas, 
+        NOW(), 
+        TRUE
+    );
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_actualizar_dim_divisas
+AFTER UPDATE OF valor_en_monedas
+ON Divisas
+FOR EACH ROW
+EXECUTE FUNCTION actualizar_dim_divisas();
+
+
+CREATE OR REPLACE FUNCTION crear_dim_divisas()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Insertar un nuevo registro en Dim_Divisas
+    INSERT INTO "Dim_Divisas" (div_id, nombre_divisa, simbolo_divisa, valor_en_monedas, fecha_inicio, estado_actual)
+    VALUES (
+        NEW.div_id, 
+        NEW.nombre_divisa, 
+        NEW.simbolo_divisa, 
+        NEW.valor_en_monedas, 
+        NOW(), 
+        TRUE
+    );
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_crear_dim_divisas
+AFTER INSERT
+ON Divisas
+FOR EACH ROW
+EXECUTE FUNCTION crear_dim_divisas();

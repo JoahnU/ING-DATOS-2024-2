@@ -156,5 +156,5 @@ class Dim_Tiempo(Base):
     trimestre = Column(Integer, nullable=False)
 
 # Crear el motor y las tablas (si es necesario)
-engine = create_engine("postgresql+psycopg2://postgres:Arg1812@localhost/gambling2")
+engine = create_engine("postgresql+psycopg2://postgres:Arg1812@localhost/gambling")
 Base.metadata.create_all(engine)

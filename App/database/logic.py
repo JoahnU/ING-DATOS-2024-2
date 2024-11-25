@@ -1,13 +1,16 @@
-from models import engine
-
 from sqlalchemy import text
+
+from models import engine
 
 procedures = [
     # Procedimiento para compra de divisas
     """
         CREATE OR REPLACE PROCEDURE buyCurrency(customer INTEGER, divisa INTEGER, quantity NUMERIC(10,2)) AS $$
         DECLARE
-            aumento NUMERIC;   
+            aumento NUMERIC;  
+            date_id INT;
+            id_player INT; 
+            divisa_id INT;
         BEGIN
             -- Calculando aumento
             aumento := quantity * (SELECT valor_en_monedas FROM divisas WHERE div_id = divisa);
@@ -21,8 +24,76 @@ procedures = [
             SET balance = balance + aumento
             WHERE player_id = customer;
 
+            -- Obteniendo id de la dimension fecha, jugador y divisas
+            IF (SELECT COUNT(*) FROM "Dim_Tiempo" WHERE fecha = CURRENT_DATE) = 0 THEN 
+                PERFORM dim_tiempo();
+            END IF;
+
+            date_id := (SELECT dim_tiempo_id FROM "Dim_Tiempo" WHERE fecha = CURRENT_DATE LIMIT 1);
+            id_player := (SELECT dim_jugador_id FROM "Dim_Jugador" WHERE player_id = customer AND fecha_fin IS NULL LIMIT 1);
+            divisa_id := (SELECT dim_divisas_id FROM "Dim_Divisas" WHERE div_id = divisa  AND fecha_fin IS NULL LIMIT 1);
+            
+            -- Actualizando la tabla de hechos 
+            INSERT INTO hechos_transacciones (player_id, div_id, cantidad, tipo_transaccion, tiempo_id)
+            VALUES (id_player, divisa_id, quantity, 'Compra', date_id);
+
+            RETURN;
         END; 
         $$ LANGUAGE plpgsql;
+    """, 
+    """
+        CREATE OR REPLACE FUNCTION dim_tiempo()
+        RETURNS VOID AS $$
+        DECLARE
+            current_date DATE;
+            year INT;
+            month INT;
+            day INT;
+            day_name VARCHAR(20);
+            week INT;
+            quarter INT;
+        BEGIN
+            current_date := CURRENT_DATE;
+
+            -- Calculate derived values
+            year := EXTRACT(YEAR FROM current_date);
+            month := EXTRACT(MONTH FROM current_date);
+            day := EXTRACT(DAY FROM current_date);
+            day_name := TO_CHAR(current_date, 'FMDay');  -- Full day name
+            week := EXTRACT(WEEK FROM current_date);
+            quarter := EXTRACT(QUARTER FROM current_date);
+
+            -- Insert into Dim_Tiempo
+            INSERT INTO "Dim_Tiempo" (fecha, año, mes, dia, dia_semana, semana, trimestre)
+            VALUES (current_date, year, month, day, day_name, week, quarter);
+
+        END;
+        $$ LANGUAGE plpgsql;
+    """,
+    """
+        CREATE OR REPLACE FUNCTION crear_dim_divisas()
+        RETURNS TRIGGER AS $$
+        BEGIN
+            -- Insertar un nuevo registro en Dim_Divisas
+            INSERT INTO "Dim_Divisas" (div_id, nombre_divisa, simbolo_divisa, valor_en_monedas, fecha_inicio, estado_actual)
+            VALUES (
+                NEW.div_id, 
+                NEW.nombre_divisa, 
+                NEW.simbolo_divisa, 
+                NEW.valor_en_monedas, 
+                NOW(), 
+                TRUE
+            );
+
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+
+        CREATE TRIGGER trg_crear_dim_divisas
+        AFTER INSERT
+        ON Divisas
+        FOR EACH ROW
+        EXECUTE FUNCTION crear_dim_divisas();
     """,
     """
         CREATE OR REPLACE FUNCTION crear_dim_jugador()
@@ -143,4 +214,5 @@ procedures = [
 
 with engine.connect() as connection:
     for procedure in procedures:
+        print(f"Procedure execution {procedure}")
         connection.execute(text(procedure))

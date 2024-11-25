@@ -57,7 +57,8 @@ def nuevapuesta(p_id, g_id, valor, numero):
     session.commit()
     return nuevapuesta
 
-def compras(player_id, div_id, cantidad):    
+def compras(player_id, div_id, cantidad): 
+    # Creando compra mediante procedimiento buyCurrency   
     with engine.begin() as connection:
         connection.execute(
             text("CALL buyCurrency(:player, :divisa, :quantity);"),
@@ -66,7 +67,7 @@ def compras(player_id, div_id, cantidad):
                 "divisa": div_id,
                 "quantity": cantidad,
             },
-        ).fetchone()
+        )
         return True
 
 #read
