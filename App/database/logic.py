@@ -228,6 +228,66 @@ procedures = [
 
         END;
         $$ LANGUAGE plpgsql;
+    """,
+
+    """
+        CREATE OR REPLACE PROCEDURE incrementarBalance(
+    user_id INTEGER, 
+    cantidad NUMERIC(10, 2)
+)
+AS $$
+DECLARE
+    referido_id INTEGER;
+    recompensa NUMERIC(10, 2);
+BEGIN
+    
+    UPDATE jugador
+    SET balance = balance + cantidad, earnings = earnings + cantidad
+    WHERE player_id = user_id;
+
+    
+    SELECT referral_id INTO referido_id
+    FROM jugador
+    WHERE player_id = user_id;
+
+	
+	-- Creando en la dimension de tiempo el registro en caso de no existir
+	IF (SELECT COUNT(*) FROM "Dim_Tiempo" WHERE fecha = CURRENT_DATE) = 0 THEN 
+		PERFORM dim_tiempo();
+	END IF;
+
+    -- Aumentando el 5% de ganancias a el usuario que lo refirió
+    IF referido_id IS NOT NULL THEN
+        recompensa := cantidad * 0.05;
+
+        UPDATE jugador
+        SET balance = balance + recompensa
+        WHERE player_id = referido_id;
+
+        
+        INSERT INTO hechos_transacciones (player_id, cantidad, tipo_transaccion, tiempo_id)
+        VALUES (
+            (SELECT dim_jugador_id FROM "Dim_Jugador" WHERE player_id = referido_id AND fecha_fin IS NULL LIMIT 1), 
+            recompensa, 
+            'Aumento por referido',
+            (SELECT dim_tiempo_id FROM "Dim_Tiempo" WHERE fecha = CURRENT_DATE LIMIT 1)
+        );
+    END IF;
+
+   -- Registrando hecho en OLAP
+    INSERT INTO hechos_transacciones (player_id, cantidad, tipo_transaccion, tiempo_id)
+    VALUES (
+        (SELECT dim_jugador_id FROM "Dim_Jugador" WHERE player_id = user_id AND fecha_fin IS NULL LIMIT 1), 
+        cantidad, 
+        'premio victoria', 
+        (SELECT dim_tiempo_id FROM "Dim_Tiempo" WHERE fecha = CURRENT_DATE LIMIT 1)
+    );
+
+END;
+$$ LANGUAGE plpgsql;
+
+
+
     """
 ]
 
