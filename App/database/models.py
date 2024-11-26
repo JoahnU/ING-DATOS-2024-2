@@ -17,6 +17,7 @@ class Jugador(Base):
     password = Column(String(256), nullable=False)
     balance = Column(DECIMAL(10, 2), default=0.00)
     referral_id = Column(Integer, ForeignKey("jugador.player_id", ondelete="SET NULL"))
+    earnings = Column(DECIMAL(10, 2), default=0.00)
     
     # Relaciones
     referidos = relationship("Jugador", remote_side=[player_id])  # Recursiva

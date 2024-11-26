@@ -5,7 +5,7 @@ from sqlalchemy import Date, cast, text
 from datetime import date
 
 
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, aliased
 Session = sessionmaker(bind=engine)
 session = Session()
 
@@ -70,6 +70,7 @@ def compras(player_id, div_id, cantidad):
             },
         )
         return True
+
     
 def resultado(id): 
     # Creando compra mediante procedimiento buyCurrency   
@@ -152,20 +153,15 @@ def delete_player(session, player_name):
 
 
 #acceder referridos
-def get_player_referrals(session, player_name):
+def get_player_referrals(id):
+    # Alias para la consulta
+    referred = aliased(Jugador);
     
     # Buscar al jugador por su nombre
-    player = session.query(Jugador).filter(Jugador.user_name == player_name).first()
-    
-    if player:
-        # Obtener los referidos del jugador
-        referrals = [{"user_name": referral.user_name, "email_address": referral.email_address}
-                     for referral in player.referidos]
-        
-        # Retornar la lista de referidos
-        return referrals
-    else:
-        return f"No se encontró un jugador con el nombre '{player_name}'."
+    query = session.query(Jugador, referred).join(referred, Jugador.player_id == referred.referral_id).filter(Jugador.player_id == id)
+
+    # Retornando unicamente la información de los referidos
+    return [ player for _, player in query.all() ]
 
 #juegos y sus apuestas
 
