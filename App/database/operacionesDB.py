@@ -28,7 +28,8 @@ def registrarUsuarioReferido(name, email, password, id):
         user_name = name, 
         email_address = email,
         password = hashlib.sha256(password.encode('utf-8')).hexdigest(),
-        referral_id = id
+        referral_id = id,
+        balance = 50
     )
     session.add(nuevoJugador)
     session.commit()
