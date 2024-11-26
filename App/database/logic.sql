@@ -242,3 +242,20 @@ BEGIN
 
 END;
 $$ LANGUAGE plpgsql;
+
+-- Funcion para saber el color ganador
+
+CREATE OR REPLACE FUNCTION get_number_color(number INT)
+RETURNS TEXT AS $$
+BEGIN
+    IF number = 0 THEN
+        RETURN 'Green';
+    ELSIF number IN (1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36) THEN
+        RETURN 'Red';
+    ELSIF number IN (2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35) THEN
+        RETURN 'Black';
+    ELSE
+        RETURN 'Unknown';
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
