@@ -177,12 +177,35 @@ nav {
   font-size: 14px;
 }
 
+.block-ruleta {
+  width: 100%; 
+  height: auto;
+  display: flex;
+  flex-direction: column; 
+  justify-content: center;
+  align-items: center; 
+  background-color: #1a1a1a;
+  padding: 20px;
+  margin: 0px auto; 
+  margin-right: 0;
+}
+
 #canvas {
-  margin: 20px auto;
-  display: block;
-  background-color: #fff;
-  border: 2px solid #333;
-  border-radius: 50%;
+  margin: 20px 0; 
+  background-color: #1a1a1a;
+  border: 2px solid #1a1a1a;
+  border-radius: 0%;
+  
+}
+
+#result {
+  font-size: 50px;
+  color: white;
+  position: absolute; 
+  top: 360px; 
+  left: 51%; 
+  transform: translate(-50%, -50%); 
+  
 }
 
 #spin {
@@ -193,17 +216,9 @@ nav {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  margin: 20px 0;
+  margin-top: 20px; 
 }
 
 #spin:hover {
   background-color: #0056b3;
-}
-
-#result {
-  display: fixed;
-  font-size: 50px;
-  color: white;
-  margin-top: -410px;
-  margin-bottom: 350px;
 }
