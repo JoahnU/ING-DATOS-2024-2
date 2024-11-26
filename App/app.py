@@ -249,8 +249,9 @@ def referral(id):
         )
 
         user = operacionesDB.rjugador_id(token['id'])
+        referidos = operacionesDB.get_player_referrals(token['id'])
 
-        return render_template('getreferrallink.html', user = user)
+        return render_template('getreferrallink.html', user = user, referidos = referidos)
     return render_template("registroreferido.html", id = id)
 
 @app.route("/register/<id>", methods = ['POST'])
