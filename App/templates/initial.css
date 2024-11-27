@@ -149,18 +149,30 @@ nav {
   border-radius: 5px;
   text-align: center;
   background-color: #2a2a2a;
+  border: none; /* Eliminamos el borde del botón */
+  cursor: pointer;
+  transition: background-color 0.3s ease; /* Suavizado */
+  color: white; /* Aseguramos que el texto dentro del botón sea blanco */
 }
 
 .bet-card.red {
-  background-color: #D32F2F;
+  background-color: #c94143;
 }
 
 .bet-card.green {
-  background-color: #5dbb2f;
+  background-color: #32b64e;
 }
 
 .bet-card.gray {
-  background-color: #000000;
+  background-color: #2a2c3f;
+}
+
+.bet-card.selected {
+  filter: brightness(0.7); /* Oscurece el botón seleccionado */
+}
+
+.bet-card:hover {
+  filter: brightness(0.9); /* Resalta al pasar el ratón */
 }
 
 .bet-card .title {
@@ -177,35 +189,136 @@ nav {
   font-size: 14px;
 }
 
-.block-ruleta {
-  width: 100%; 
-  height: auto;
-  display: flex;
-  flex-direction: column; 
+/* Estilos para el Modal */
+.modal {
+  display: none; /* Oculto por defecto */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #000000b3; /* Fondo oscuro y semitransparente */
   justify-content: center;
-  align-items: center; 
-  background-color: #1a1a1a;
+  align-items: center;
+  z-index: 1000;
+  transition: opacity 0.3s ease;
+}
+
+.modal-content {
+  background-color: #333; /* Fondo oscuro para el modal */
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+  width: 400px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Sombra para darle profundidad */
+  animation: fadeIn 0.3s ease-out; /* Animación para que el modal aparezca */
+}
+
+/* Título del modal, ajustado para quedar más pegado al borde superior */
+.modal h2 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #fff;
+  margin: 0; /* Eliminamos el margen para acercarlo más al borde superior */
+  /* Agregamos un pequeño padding para evitar que toque el borde */
+}
+
+/* Línea divisoria debajo del título */
+.modal h2::after {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 2px;
+  background-color: #555; /* Línea gris */
+  margin: 10px 0; /* Espaciado entre la línea y el texto siguiente */
+}
+
+.modal p {
+  font-size: 18px;
+  color: #ccc;
+  margin-bottom: 60px;
+}
+
+#betColor {
+  font-weight: bold;
+  color: #f39c12; /* Color destacado para el color de la apuesta */
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.modal-button {
+  padding: 12px 25px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 45%;
+  transition: all 0.3s ease;
+}
+
+.modal-button.confirm {
+  background-color: #27ae60; /* Verde */
+  color: white;
+}
+
+.modal-button.cancel {
+  background-color: #e74c3c; /* Rojo */
+  color: white;
+}
+
+.modal-button:hover {
+  transform: translateY(-2px); /* Efecto de hover con un pequeño desplazamiento hacia arriba */
+}
+
+.modal-button:active {
+  transform: translateY(2px); /* Efecto de presionado */
+}
+
+/* Animación de aparición del modal */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.block-ruleta {
+  width: 100%; /* Hacer que ocupe todo el ancho */
+  height: auto;
+  display: flex; /* Flexbox para centrar */
+  flex-direction: column; /* Elementos en columna */
+  justify-content: center; /* Centrado horizontal */
+  align-items: center; /* Centrado vertical */
+  background-color: #222222;
   padding: 20px;
-  margin: 0px auto; 
+  margin: 0px auto; /* Márgenes superior e inferior de 50px */
   margin-right: 0;
+  /*position: relative; /* Necesario para posicionar #result */
 }
 
 #canvas {
-  margin: 20px 0; 
-  background-color: #1a1a1a;
-  border: 2px solid #1a1a1a;
+  margin: 20px 0; /* Márgenes superior e inferior de 20px */
+  background-color: #222222;
+  border: 2px solid #222222;
   border-radius: 0%;
-  
+  /*position: relative; /* Para permitir contenido interno superpuesto */
 }
 
 #result {
   font-size: 50px;
   color: white;
-  position: absolute; 
-  top: 360px; 
-  left: 51%; 
-  transform: translate(-50%, -50%); 
-  
+  position: absolute; /* Relativo a #canvas */
+  top: 360px; /* Centrado vertical */
+  left: 51%; /* Centrado horizontal */
+  transform: translate(-50%, -50%); /* Ajusta el centro absoluto */
+  /*pointer-events: none; /* Evita que interfiera con clics */
 }
 
 #spin {
@@ -216,7 +329,7 @@ nav {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  margin-top: 20px; 
+  margin-top: 20px; /* Espaciado superior */
 }
 
 #spin:hover {
