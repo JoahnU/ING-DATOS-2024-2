@@ -109,3 +109,72 @@ cancelButton.addEventListener('click', function() {
   // Cerrar el modal sin hacer cambios
   modal.style.display = 'none';
 });
+
+// Función para hacer el calculo de la ganancia potencial
+
+// Multiplicadores para cada color
+const betMultipliers = {
+  red: 2,     // Ejemplo: 2x para rojo
+  green: 13,  // Ejemplo: 13x para verde
+  black: 2    // Ejemplo: 2x para negro
+};
+
+// Función para actualizar la ganancia potencial en todas las tarjetas
+function updatePotentialProfit() {
+  const currentBet = parseFloat(betAmountInput.value);
+
+  // Si hay una apuesta válida
+  if (!isNaN(currentBet) && currentBet > 0) {
+    // Actualizar la ganancia potencial en cada tarjeta
+    betCards.forEach(card => {
+      const betType = card.dataset.bet; // Obtener el tipo de apuesta (red, green, black)
+      const multiplier = betMultipliers[betType] || 1; // Obtener el multiplicador correspondiente
+      const potentialProfit = currentBet * multiplier; // Calcular la ganancia potencial
+
+      // Actualizar el texto dentro de la tarjeta
+      card.querySelector('.profit').textContent = Ganancia potencial: $${potentialProfit.toFixed(2)};
+    });
+  } else {
+    // Si no hay una apuesta válida, limpiar el texto en todas las tarjetas
+    betCards.forEach(card => {
+      card.querySelector('.profit').textContent = 'Ganancia potencial: $0.00';
+    });
+  }
+}
+
+// Función auxiliar para actualizar el valor del input
+function setBetAmount(value) {
+  betAmountInput.value = value;
+  // Disparar actualización de ganancias cada vez que cambia el valor
+  updatePotentialProfit();
+}
+
+// Evento para actualizar la ganancia cuando cambia manualmente el valor del input
+betAmountInput.addEventListener('input', updatePotentialProfit);
+
+// Actualizar ganancia cuando se presionan los botones
+addButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    const amount = parseFloat(button.getAttribute('data-amount'));
+    const currentBet = parseFloat(betAmountInput.value) || 0;
+    setBetAmount(currentBet + amount);
+  });
+});
+
+halfButton.addEventListener('click', () => {
+  const currentBet = parseFloat(betAmountInput.value) || 0;
+  setBetAmount(Math.max(1, Math.floor(currentBet / 2))); // Al menos 1 si es válido
+});
+
+doubleButton.addEventListener('click', () => {
+  const currentBet = parseFloat(betAmountInput.value) || 0;
+  setBetAmount(currentBet * 2);
+});
+
+maxButton.addEventListener('click', () => {
+  setBetAmount(9999); // Valor máximo
+});
+
+clearButton.addEventListener('click', () => {
+  setBetAmount(0); // Reiniciar a 0
+});
