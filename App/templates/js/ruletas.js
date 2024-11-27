@@ -110,7 +110,7 @@ function drawRouletteWheel() {
 //funcion que lleva cuenta del tiempo de giro
 function spin() {
     spinTime = 0;
-    spinTimeTotal = 1000; // Tiempo de giro aleatorio entre 6 y 10 segundos
+    spinTimeTotal = ranSpin; // Tiempo de giro aleatorio entre 6 y 10 segundos
     rotateWheel();
 }
 //Funcion que hace desacelerar el giro al final
@@ -129,7 +129,7 @@ function rotateWheel() {
     }
     //Registros de pocision del valor objetivo 
     var targetAngle = (360 - (targetIndex * (arc * 180 / Math.PI))) % 360; //Angulo del valor objetivo
-    var totalRotations = 1 * 360; //Cantidad de giros que da
+    var totalRotations = ranGiro * 360; //Cantidad de giros que da
     var progress = spinTime / spinTimeTotal; //Mide la razon de del tiempo transcurrido
     var easedProgress = easeOut(spinTime, 0, 1, spinTimeTotal); //llama la funcion easeout para el momento actual
     var totalAngleToRotate = totalRotations + targetAngle; //Cantidad de recorrido
