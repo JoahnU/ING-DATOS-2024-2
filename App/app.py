@@ -131,7 +131,7 @@ def register_in():
             "nombre": jugador.user_name,
             "rol": 'player',
             "crDate": str(datetime.now()),
-            "expDate": str(datetime.now() + timedelta(days=2))
+            "expDate": str(datetime.now() + timedelta(days=1))
         }
 
         session['jwt'] = jwt.encode(payload, secret_key, algorithm="HS256")
@@ -294,6 +294,18 @@ def result(id):
 @app.route('/ruleta.js/<id>')
 def ruletaScript(id):
     return render_template('js/ruletas.js', id = id), 200, {'Content-Type': 'application/javascript'}
+
+
+@app.route("/balance")
+def balance(): 
+    if 'jwt' not in session:
+        return redirect(url_for('index'))
+    token = jwt.decode (
+            session['jwt'], 
+            secret_key, 
+            algorithms=["HS256"]
+    )
+    return render_template("historial_balance.html", balance = operacionesDB.historial_balance(token['id']))
 
 @app.route("/logout")
 def logout():

@@ -251,7 +251,7 @@ $$ LANGUAGE plpgsql;
 -- Funcion para saber el color ganador
 
 CREATE OR REPLACE FUNCTION get_number_color(number INT)
-RETURNS TEXT AS $$
+RETURNS VARCHAR(10) AS $$
 BEGIN
     IF number = 0 THEN
         RETURN 'Green';
@@ -266,7 +266,6 @@ END;
 $$ LANGUAGE plpgsql;
 
 --para incrementar el balance de los referidos
-
 CREATE OR REPLACE PROCEDURE incrementarBalance(
     user_id INTEGER, 
     cantidad NUMERIC(10, 2)
@@ -292,12 +291,13 @@ BEGIN
 		PERFORM dim_tiempo();
 	END IF;
 
-    -- Aumentando el 5% de ganancias a el usuario que lo refirió
+    -- Aumentando el 10% de ganancias a el usuario que lo refirió
     IF referido_id IS NOT NULL THEN
-        recompensa := cantidad * 0.05;
+        recompensa := cantidad * 0.10;
 
         UPDATE jugador
-        SET balance = balance + recompensa
+        SET balance = balance + recompensa,
+            earnings = earnings + recompensa
         WHERE player_id = referido_id;
 
         
@@ -322,6 +322,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+
 -- Procedure para crear una apuesta
 CREATE OR REPLACE PROCEDURE apuesta(player INT, game INT, quantity NUMERIC(10,2), color VARCHAR(10)) AS $$
 BEGIN 
@@ -330,6 +331,12 @@ BEGIN
 		RAISE EXCEPTION 'Saldo insuficiente para hacer apuesta';
 	ELSIF ((SELECT COUNT(*) FROM apuesta WHERE game_id = game) >= (SELECT capacidad FROM juegos WHERE game_id = game)) THEN 
 		RAISE EXCEPTION 'Cupos insuficientes para hacer la apuesta';
+	ELSIF (SELECT resultado FROM juegos WHERE game_id = game) != -1 THEN
+		RAISE EXCEPTION 'El resultado de este juego ya ha sido dado';
+	ELSIF (SELECT min_apuesta FROM juegos WHERE game_id = game) > quantity THEN
+		RAISE EXCEPTION 'La apuesta es menor a la apuesta mínima';
+	ELSIF (hora_juego >= NOW::TIME) THEN
+		RAISE EXCEPTION 'No se puede apostar después de la hora limite';
 	END IF; 
 
 	-- Quitando valor apostado al saldo del jugador 
@@ -355,3 +362,56 @@ BEGIN
 	RETURN; 
 END;
 $$ LANGUAGE plpgsql;
+
+-- Triggerer que premia a los ganadores una vez hay resultado en un juego 
+CREATE OR REPLACE FUNCTION ganadores() RETURNS TRIGGER AS $$
+DECLARE 
+	color_result VARCHAR(10);
+	bonificacion INT;
+	apuesta_pl RECORD;
+BEGIN 
+
+	-- Añadiendo el color resultante a el registro del juego
+	color_result := get_number_color(NEW.resultado);
+	UPDATE juegos SET color = color_result WHERE game_id = NEW.game_id; 
+
+	IF color_result NOT IN ('Red', 'Green', 'Black') THEN 
+		RAISE EXCEPTION 'Resultado no posible';
+	END IF; 
+
+	-- Decidiendo bonificacion para ganadores
+	IF color_result = 'Green' THEN
+		bonificacion := 36;
+	ELSE 
+		bonificacion:= 2;
+	END IF; 
+
+	-- Creando tabla temporal
+	CREATE TEMP TABLE apuestas_ganadoras (id INT, quantity NUMERIC(10,2));
+	
+	-- Obteniendo id de ganadores y cantidad apostada
+	INSERT INTO apuestas_ganadoras SELECT player_id, valor FROM apuesta WHERE game_id = NEW.game_id AND color = color_result;
+
+	-- Aumentando balance de acuerdo a lo ganado
+	FOR apuesta_pl IN SELECT * FROM apuestas_ganadoras LOOP 
+		CALL incrementarbalance(apuesta_pl.id, apuesta_pl.quantity * bonificacion);
+	END LOOP;
+
+	RETURN NEW; 
+	
+END;
+$$ LANGUAGE plpgsql; 
+
+
+-- Funcion para obtener el historial de balance de un jugador 
+CREATE OR REPLACE FUNCTION historial_balance(id INT) RETURNS TABLE(balance NUMERIC(10,2), cantidad NUMERIC(10,2), hecho VARCHAR(10)) AS $$
+BEGIN 
+	RETURN query
+			SELECT dim.balance as Nuevo_balance, hecho.cantidad, hecho.tipo_transaccion FROM "Dim_Jugador" dim 
+			JOIN hechos_transacciones hecho
+			ON dim.dim_jugador_id = hecho.player_id
+			WHERE dim.player_id = id
+            ORDER BY hecho.transaccion_id DESC;
+END; 
+$$ LANGUAGE plpgsql;
+TABLE juegos;

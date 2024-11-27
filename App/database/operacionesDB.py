@@ -81,6 +81,16 @@ def resultado(id):
                 "id": id,
             }
         ).fetchone()[0]
+    
+def historial_balance(id): 
+    # Creando compra mediante procedimiento buyCurrency   
+    with engine.begin() as connection:
+        return connection.execute(
+            text("SELECT * FROM historial_balance(:id);"),
+            {
+                "id": id,
+            }
+        ).all()
 
 #read
 def rjugador_id(player_id):

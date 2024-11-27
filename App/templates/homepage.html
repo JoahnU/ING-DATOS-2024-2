@@ -74,7 +74,9 @@
         <div class="user-info">
             <div class="username-balance">
                 <span class="username">{{ user.user_name }}</span>
-                <span class="balance">Balance: ${{ user.balance }}</span>
+                <a href="{{ url_for('balance') }}">
+                    <span class="balance">Balance: ${{ user.balance }}</span>
+                </a>
             </div>
             <div>
                 <a href="{{ url_for('logout') }}" class=btn>Cerrar Sesión</a>
