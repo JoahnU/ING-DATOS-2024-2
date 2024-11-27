@@ -1,3 +1,4 @@
+-- Procedimiento que aumenta el balance de un jugador hecha una compra bajo una divisa
 CREATE OR REPLACE PROCEDURE buyCurrency(customer INTEGER, divisa INTEGER, quantity NUMERIC(10,2)) AS $$
 DECLARE
     aumento NUMERIC;  
@@ -34,6 +35,7 @@ BEGIN
 END; 
 $$ LANGUAGE plpgsql;
 
+-- Función encargada de poblar la dimension de tiempo
 CREATE OR REPLACE FUNCTION dim_tiempo()
 RETURNS VOID AS $$
 DECLARE
@@ -62,6 +64,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Triggerer que pobla la dimensión de divisas al crearse una divisa
 CREATE OR REPLACE FUNCTION crear_dim_divisas()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -86,7 +89,7 @@ ON Divisas
 FOR EACH ROW
 EXECUTE FUNCTION crear_dim_divisas();
 
-
+-- Triggerer que pobla la dimensión de jugadores al crear un jugador
 CREATE OR REPLACE FUNCTION crear_dim_jugador()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -111,7 +114,7 @@ ON Jugador
 FOR EACH ROW
 EXECUTE FUNCTION crear_dim_jugador();
 
-
+-- Triggerer que pobla la dimension de jugador al actualizar un jugador 
 CREATE OR REPLACE FUNCTION actualizar_dim_jugador()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -141,17 +144,17 @@ ON Jugador
 FOR EACH ROW
 EXECUTE FUNCTION actualizar_dim_jugador();
 
-
+-- Triggerer que pobla la dimension de juego una vez se actualizan datos sobre el juego
 CREATE OR REPLACE FUNCTION actualizar_dim_juegos()
 RETURNS TRIGGER AS $$
 BEGIN
     -- Cerrar el registro actual en Dim_Juegos
-    UPDATE "Dim_Juegos"
+    UPDATE "Dim_Juego"
     SET fecha_fin = NOW(), estado_actual = FALSE
     WHERE game_id = NEW.game_id AND estado_actual = TRUE;
 
     -- Insertar un nuevo registro en Dim_Juegos
-    INSERT INTO "Dim_Juegos" (game_id, min_apuesta, capacidad, fecha_inicio, estado_actual)
+    INSERT INTO "Dim_Juego" (game_id, min_apuesta, capacidad, fecha_inicio, estado_actual)
     VALUES (
         NEW.game_id, 
         NEW.min_apuesta, 
@@ -170,6 +173,33 @@ ON Juegos
 FOR EACH ROW
 EXECUTE FUNCTION actualizar_dim_juegos();
 
+
+-- Triggerer que pobla la dimension de juego una vez se crea un juego
+CREATE OR REPLACE FUNCTION Crear_dim_juegos()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Insertar un nuevo registro en Dim_Juegos
+    INSERT INTO "Dim_Juego" (game_id, min_apuesta, capacidad, fecha_inicio, estado_actual)
+    VALUES (
+        NEW.game_id, 
+        NEW.min_apuesta, 
+        NEW.capacidad, 
+        NOW(), 
+        TRUE
+    );
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_crear_dim_juegos
+AFTER INSERT
+ON Juegos
+FOR EACH ROW
+EXECUTE FUNCTION Crear_dim_juegos();
+
+
+-- Trigger que se encarga de poblar dimension de divisas una vez se actualize un dato de estas
 CREATE OR REPLACE FUNCTION actualizar_dim_divisas()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -198,31 +228,6 @@ AFTER UPDATE OF valor_en_monedas
 ON Divisas
 FOR EACH ROW
 EXECUTE FUNCTION actualizar_dim_divisas();
-
-
-CREATE OR REPLACE FUNCTION crear_dim_divisas()
-RETURNS TRIGGER AS $$
-BEGIN
-    -- Insertar un nuevo registro en Dim_Divisas
-    INSERT INTO "Dim_Divisas" (div_id, nombre_divisa, simbolo_divisa, valor_en_monedas, fecha_inicio, estado_actual)
-    VALUES (
-        NEW.div_id, 
-        NEW.nombre_divisa, 
-        NEW.simbolo_divisa, 
-        NEW.valor_en_monedas, 
-        NOW(), 
-        TRUE
-    );
-
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER trg_crear_dim_divisas
-AFTER INSERT
-ON Divisas
-FOR EACH ROW
-EXECUTE FUNCTION crear_dim_divisas();
 
 -- Función para obtener resultado de un juego 
 CREATE OR REPLACE FUNCTION getResult(id INT) RETURNS INT AS $$
@@ -314,5 +319,39 @@ BEGIN
         (SELECT dim_tiempo_id FROM "Dim_Tiempo" WHERE fecha = CURRENT_DATE LIMIT 1)
     );
 
+END;
+$$ LANGUAGE plpgsql;
+
+-- Procedure para crear una apuesta
+CREATE OR REPLACE PROCEDURE apuesta(player INT, game INT, quantity NUMERIC(10,2), color VARCHAR(10)) AS $$
+BEGIN 
+	-- Validando que haya saldo suficiente y cupos disponibles para realizar apuesta
+	IF (SELECT balance FROM jugador WHERE player_id = player) < quantity THEN 
+		RAISE EXCEPTION 'Saldo insuficiente para hacer apuesta';
+	ELSIF ((SELECT COUNT(*) FROM apuesta WHERE game_id = game) >= (SELECT capacidad FROM juegos WHERE game_id = game)) THEN 
+		RAISE EXCEPTION 'Cupos insuficientes para hacer la apuesta';
+	END IF; 
+
+	-- Quitando valor apostado al saldo del jugador 
+	UPDATE jugador SET balance = balance - quantity WHERE player_id = player; 
+	
+	-- Creando el registro de la apuesta
+	INSERT INTO apuesta VALUES (player, game, quantity, color); 
+	
+	-- Sumando valor apostado a apuesta total del juego
+	UPDATE juegos SET total_bet = total_bet + quantity WHERE game_id = game;
+	
+	
+	-- Registrando transacción en OLAP 
+	INSERT INTO hechos_transacciones (player_id, game_id, cantidad, tipo_transaccion, tiempo_id)
+    VALUES (
+        (SELECT dim_jugador_id FROM "Dim_Jugador" WHERE player_id = player AND fecha_fin IS NULL LIMIT 1), 
+		(SELECT dim_juego_id FROM "Dim_Juego" WHERE game_id = game AND fecha_fin IS NULL LIMIT 1),
+        quantity, 
+        'Apuesta', 
+        (SELECT dim_tiempo_id FROM "Dim_Tiempo" WHERE fecha = CURRENT_DATE LIMIT 1)
+    ); 
+
+	RETURN; 
 END;
 $$ LANGUAGE plpgsql;

@@ -17,7 +17,7 @@ class Jugador(Base):
     password = Column(String(256), nullable=False)
     balance = Column(DECIMAL(10, 2), default=0.00)
     referral_id = Column(Integer, ForeignKey("jugador.player_id", ondelete="SET NULL"))
-    earnings = Column(DECIMAL(10, 2), default=0.00)
+    earnings = Column(DECIMAL(10, 2), default=0.0)
     
     # Relaciones
     referidos = relationship("Jugador", remote_side=[player_id])  # Recursiva
@@ -39,7 +39,7 @@ class Juegos(Base):
     capacidad = Column(Integer, nullable=False)
     creador_id = Column(Integer, ForeignKey("jugador.player_id", ondelete="CASCADE"), nullable=False)
     resultado = Column(Integer, default=-1)
-    color = Column(Integer, nullable=True)
+    color = Column(VARCHAR(10), nullable=True)
     
     # Relaciones
     creador = relationship("Jugador", back_populates="juegos_creados")
@@ -66,7 +66,7 @@ class Apuesta(Base):
     player_id = Column(Integer, ForeignKey("jugador.player_id", ondelete="CASCADE"), primary_key=True)
     game_id = Column(Integer, ForeignKey("juegos.game_id", ondelete="CASCADE"), primary_key=True)
     valor = Column(DECIMAL(10, 2), default=0.00)
-    color = Column(Integer, nullable=False)
+    color = Column(VARCHAR(10), nullable=False)
 
     # Relaciones
     jugador = relationship("Jugador", back_populates="apuestas")
@@ -157,5 +157,5 @@ class Dim_Tiempo(Base):
     trimestre = Column(Integer, nullable=False)
 
 # Crear el motor y las tablas (si es necesario)
-engine = create_engine("postgresql+psycopg2://postgres:Arg1812@localhost/gambling")
+engine = create_engine("postgresql+psycopg2://postgres:Arg1812@localhost/gambling3")
 Base.metadata.create_all(engine)

@@ -151,5 +151,5 @@ function stopRotateWheel() {
     
 }
 
-
 drawRouletteWheel();
+searchResult()

@@ -1,7 +1,7 @@
 from database.models import *
 import hashlib
 
-from sqlalchemy import Date, cast, text
+from sqlalchemy import Date, cast, text, func
 from datetime import date
 
 
@@ -115,8 +115,11 @@ def get_games_by_player(session, player_name):
 def get_games_avaiable():
     # Query para buscar los juegos de la fecha actual
     player_games = (
-        session.query(Juegos)
-        .filter(cast(Juegos.fecha_creacion,Date) == date.today()).all()
+        session.query(Juegos, func.count(Apuesta.game_id).label("numero_apuestas"))
+        .outerjoin(Apuesta, Juegos.game_id == Apuesta.game_id)
+        .filter(cast(Juegos.fecha_creacion, Date) == date.today())
+        .group_by(Juegos.game_id)
+        .all()
     )
     return player_games
 
@@ -181,7 +184,7 @@ def get_game_bets(game_id):
 
 
 
-def get_available_games(session):
+def get_available_games():
     """
     Retorna una lista de todos los juegos disponibles para unirse.
     Un juego está disponible si la cantidad de jugadores actuales es menor que su capacidad.
@@ -214,8 +217,9 @@ def get_available_games(session):
             "game_id": game.game_id,
             "min_apuesta": game.min_apuesta,
             "capacidad": game.capacidad,
-            "current_players": subquery.c.current_players if subquery.c.current_players else 0,
+            "current_players": subquery.c.current_players,
             "creador_id": game.creador_id,
+            "hora_juego": game.hora_juego
         }
         for game in available_games
     ]

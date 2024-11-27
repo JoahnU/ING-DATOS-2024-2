@@ -178,7 +178,7 @@
                     <tr>
                         <td>{{ jugador.user_name }}</td>
                         <td>{{ jugador.email_address }}</td>
-                        <td>${{ jugador.earnings * 0.05 }}</td>
+                        <td>${{ jugador.earnings_percent }}</td>
                     </tr>
                 {% endfor %}
                 {% if not referidos %}

@@ -29,44 +29,62 @@
   
   <div id="result"><span id="result-text">-</span></div>
 
-  <!-- Betting Interface -->
-  <div class="container">
-    <!-- Betting input section -->
-    <div class="bet-input">
-        <label for="betAmount"></label><input type="number" placeholder="Your bet" id="betAmount">
-      <button>+10</button>
-      <button>+50</button>
-      <button>+100</button>
-      <button>1/2</button>
-      <button>x2</button>
-      <button>Max</button>
-      <button>Auto Bet</button>
-    </div>
+<!-- Interfaz de apuestas -->
+<div class="container">
+  <!-- opciones de apuesta -->
+  <div class="bet-input">
+    <label for="betAmount"></label>
+    <input type="number" placeholder="Your bet" id="betAmount" value="0">
+    <button data-amount="10">+10</button>
+    <button data-amount="50">+50</button>
+    <button data-amount="100">+100</button>
+    <button id="half">1/2</button>
+    <button id="double">x2</button>
+    <button id="max">Max</button>
+    <button id="clear">Reset</button>
+  </div>
+</div>
 
-    <!-- Betting options -->
-    <div class="bet-options">
-      <!-- 1 to 17 section -->
-      <div class="bet-card red">
-        <div class="title">1 to 17</div>
-        <div class="profit">Potential Profit: $0.00</div>
-        <div class="players">Players: 0</div>
-      </div>
-
-      <!-- 0 section -->
-      <div class="bet-card green">
-        <div class="title">0</div>
-        <div class="profit">Potential Profit: $0.00</div>
-        <div class="players">Players: 3</div>
-      </div>
-
-      <!-- 18 to 36 section -->
-      <div class="bet-card gray">
-        <div class="title">18 to 36</div>
-        <div class="profit">Potential Profit: $0.00</div>
-        <div class="players">Players: 0</div>
+  <div class="bet-options">
+    <!-- Rojo -->
+    <button class="bet-card red" data-bet="red">
+      <div class="title">ROJO</div>
+      <div class="profit">Ganancia potencial: $0.00</div>
+      <div class="players">Jugadores: 0</div>
+    </button>
+  
+    <!-- Verde -->
+    <button class="bet-card green" data-bet="green">
+      <div class="title">VERDE</div>
+      <div class="profit">Potential Profit: $0.00</div>
+      <div class="players">Players: 3</div>
+    </button>
+  
+    <!-- Negro -->
+    <button class="bet-card gray" data-bet="black">
+      <div class="title">NEGRO</div>
+      <div class="profit">Potential Profit: $0.00</div>
+      <div class="players">Players: 0</div>
+    </button>
+  </div>
+  
+  <!-- Modal de confirmación de apuesta -->
+  <div id="betConfirmationModal" class="modal">
+    <div class="modal-content">
+      <h2>Confirme su apuesta</h2>
+      <p id="modalMessage">Esta seguro que quiere apostar al <span id="betColor"></span>?</p>
+      <div class="modal-buttons">
+        <button id="confirmBet" class="modal-button confirm">Confirmar</button>
+        <button id="cancelBet" class="modal-button cancel">Cancelar</button>
       </div>
     </div>
   </div>
+    
+    
+  </div>
+  
   <script src="{{  url_for('ruletaScript', id = game.game_id)  }}"></script>
+  <script src="{{  url_for('static', filename = 'apuestas.js' )  }}"></script>
+  <script src="{{  url_for('static', filename = 'botones.js' )  }}"></script>
 </body>
 </html>
