@@ -179,3 +179,44 @@ clearButton.addEventListener('click', () => {
   const currentBet = parseFloat(betAmountInput.value) || 0;
   setBetAmount(currentBet); // Valor máximo
 });
+
+// Seleccionar el botón de aceptar apuesta
+const acceptBetButton = document.getElementById('confirmBet');
+
+// Función para manejar la aceptación de la apuesta
+function submitBet() {
+  // Obtener el monto de la apuesta
+  const betAmount = parseFloat(betAmountInput.value);
+
+  // Validar el monto
+  if (isNaN(betAmount) || betAmount <= 0) {
+    alert("Por favor, ingresa un monto válido para la apuesta.");
+    return;
+  }
+
+  // Obtener el color seleccionado
+  const selectedColorCard = document.querySelector('.bet-card.selected');
+  if (!selectedColorCard) {
+    alert("Por favor, selecciona un color para apostar.");
+    return;
+  }
+
+  const betColor = selectedColorCard.dataset.bet; // Ejemplo: 'red', 'green', 'black'
+
+  // Realizar acciones con la apuesta
+  console.log(`Apuesta confirmada: ${betAmount} al color ${betColor}`);
+  alert(`Apuesta realizada: $${betAmount} al color ${betColor}. ¡Buena suerte!`);
+
+  // Puedes realizar una solicitud a un servidor aquí o ejecutar otra lógica
+  // Por ejemplo:
+  // sendBetToServer({ amount: betAmount, color: betColor });
+
+  // Reiniciar valores después de confirmar
+  betAmountInput.value = '';
+  selectedCard.classList.remove('selected');
+  updatePotentialProfit(); // Actualizar las ganancias potenciales
+}
+
+// Vincular la función al botón de aceptar
+acceptBetButton.addEventListener('click', submitBet);
+
