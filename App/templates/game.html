@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Roulette</title>
+  <title>The Roulette</title>
     <link rel="stylesheet" href="{{  url_for('static', filename='initial.css')  }}">
     <link rel="shortcut icon" href="{{ url_for('static', filename='roulette.png') }}" type="image/x-icon">
 </head>
@@ -24,7 +24,7 @@
 
   <div class="block-ruleta">
      <canvas id="canvas" width="500" height="500"></canvas>
-     <button id="spin">Spin the Wheel!</button>
+     <button id="spin">Gira la ruleta!</button>
   </div>
   
   <div id="result"><span id="result-text">-</span></div>
@@ -66,23 +66,23 @@
 
   <div class="bet-options">
     <!-- Rojo -->
-    <button class="bet-card red" data-bet="red">
+    <button class="bet-card red" data-bet="rojo">
       <div class="title">ROJO</div>
       <div class="profit">Ganancia potencial: $0.00</div>
       <div class="players">Jugadores: 0</div>
     </button>
   
     <!-- Verde -->
-    <button class="bet-card green" data-bet="green">
+    <button class="bet-card green" data-bet="verde">
       <div class="title">VERDE</div>
-      <div class="profit">Potential Profit: $0.00</div>
+      <div class="profit">Ganancia potencial: $0.00</div>
       <div class="players">Players: 3</div>
     </button>
   
     <!-- Negro -->
-    <button class="bet-card gray" data-bet="black">
+    <button class="bet-card gray" data-bet="negro">
       <div class="title">NEGRO</div>
-      <div class="profit">Potential Profit: $0.00</div>
+      <div class="profit">Ganancia potencial: $0.00</div>
       <div class="players">Players: 0</div>
     </button>
   </div>

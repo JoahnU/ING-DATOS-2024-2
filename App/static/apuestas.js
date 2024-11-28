@@ -115,7 +115,7 @@ cancelButton.addEventListener('click', function() {
 // Multiplicadores para cada color
 const betMultipliers = {
   red: 2,     // Ejemplo: 2x para rojo
-  green: 13,  // Ejemplo: 13x para verde
+  green: 36,  // Ejemplo: 36x para verde
   black: 2    // Ejemplo: 2x para negro
 };
 
