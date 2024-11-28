@@ -335,7 +335,7 @@ BEGIN
 		RAISE EXCEPTION 'El resultado de este juego ya ha sido dado';
 	ELSIF (SELECT min_apuesta FROM juegos WHERE game_id = game) > quantity THEN
 		RAISE EXCEPTION 'La apuesta es menor a la apuesta mínima';
-	ELSIF (hora_juego >= NOW::TIME) THEN
+	ELSIF (SELECT hora_juego FROM juegos WHERE game_id = game) < NOW()::TIME THEN
 		RAISE EXCEPTION 'No se puede apostar después de la hora limite';
 	END IF; 
 
@@ -415,3 +415,43 @@ BEGIN
 END; 
 $$ LANGUAGE plpgsql;
 TABLE juegos;
+
+
+-- Procedure para crear una apuesta
+CREATE OR REPLACE PROCEDURE cancelar_apuesta(player INT, game INT) AS $$
+DECLARE 
+	quantity INT;
+BEGIN 
+	-- Validando que haya saldo suficiente y cupos disponibles para realizar apuesta
+	IF (SELECT resultado FROM juegos WHERE game_id = game) != -1 THEN
+		RAISE EXCEPTION 'El resultado de este juego ya ha sido dado';
+	ELSIF (SELECT hora_juego FROM juegos WHERE game_id = game) < NOW()::TIME THEN
+		RAISE EXCEPTION 'No se puede apostar después de la hora limite';
+	END IF; 
+
+	-- Obteniendo cantidad apostada
+	quantity := (SELECT valor FROM apuesta WHERE player_id = player AND game_id = game);
+	
+	-- Sumando valor apostado al saldo del jugador 
+	UPDATE jugador SET balance = balance + quantity WHERE player_id = player; 
+	
+	-- Eliminando registro de la apuesta
+	DELETE FROM apuesta WHERE player_id = player AND game_id = game; 
+	
+	-- Restando valor apostado a apuesta total del juego
+	UPDATE juegos SET total_bet = total_bet - quantity WHERE game_id = game;
+	
+	
+	-- Registrando transacción en OLAP 
+	INSERT INTO hechos_transacciones (player_id, game_id, cantidad, tipo_transaccion, tiempo_id)
+    VALUES (
+        (SELECT dim_jugador_id FROM "Dim_Jugador" WHERE player_id = player AND fecha_fin IS NULL LIMIT 1), 
+		(SELECT dim_juego_id FROM "Dim_Juego" WHERE game_id = game AND fecha_fin IS NULL LIMIT 1),
+        quantity, 
+        'Cancelación apuesta', 
+        (SELECT dim_tiempo_id FROM "Dim_Tiempo" WHERE fecha = CURRENT_DATE LIMIT 1)
+    ); 
+
+	RETURN; 
+END;
+$$ LANGUAGE plpgsql;

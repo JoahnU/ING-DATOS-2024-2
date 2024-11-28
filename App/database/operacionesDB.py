@@ -47,16 +47,33 @@ def crearjuegos(nombre, hora, min_apuesta,capacidad, creator_id ):
     session.commit()
     return nuevojuego
 
-def nuevapuesta(p_id, g_id, valor, numero):
-    nuevapuesta = Apuesta(
-        player_id = p_id,
-        game_id = g_id,
-        valor= valor,
-        numero = numero
-    )
-    session.add(nuevapuesta)
-    session.commit()
-    return nuevapuesta
+def nuevapuesta(player, game, quantity, color):
+    with engine.begin() as connection:
+        connection.execute(
+            text("CALL apuesta(:player, :game, :quantity, :color);"),
+            {
+                "player": player,
+                "game": int(game),
+                "quantity": quantity,
+                "color": color.capitalize()
+            },
+        )
+        return True
+    
+def cancel_bet(player, game):
+    with engine.begin() as connection:
+        connection.execute(
+            text("CALL cancelar_apuesta(:player, :game);"),
+            {
+                "player": player,
+                "game": int(game)
+            },
+        )
+        return True
+    
+def apuesta_jugador_juego(player, game):
+    return session.query(Apuesta).filter(Apuesta.player_id == player).filter(Apuesta.game_id == game).first()
+
 
 def compras(player_id, div_id, cantidad): 
     # Creando compra mediante procedimiento buyCurrency   

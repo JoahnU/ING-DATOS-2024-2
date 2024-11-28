@@ -207,9 +207,25 @@ function submitBet() {
   console.log(`Apuesta confirmada: ${betAmount} al color ${betColor}`);
   alert(`Apuesta realizada: $${betAmount} al color ${betColor}. ¡Buena suerte!`);
 
-  // Puedes realizar una solicitud a un servidor aquí o ejecutar otra lógica
-  // Por ejemplo:
-  // sendBetToServer({ amount: betAmount, color: betColor });
+  const myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+
+  fetch(window.location.href + '/apuesta', {
+    method: "POST", 
+    body: JSON.stringify({ 
+      cantidad: betAmount,
+      color: betColor
+    }),
+    headers: myHeaders,
+  })
+  .then(res=>{
+      return res.json();
+  })
+  .then(json => {
+    document.getElementById('apuestaActual').style.display = 'flex'; 
+    document.getElementById('InfoApuesta').innerText = "Apuesta actual: " + json.valor + " - " + json.color
+    document.getElementById('linkCancel').href = 'http://localhost:5000/cancelbet/' + json.juego
+  });
 
   // Reiniciar valores después de confirmar
   betAmountInput.value = '';

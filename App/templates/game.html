@@ -11,7 +11,7 @@
   <nav>
     <div class="nav-left">
       <h1>GAMBLING4EVER</h1>
-
+      <p>Balance: ${{ user.balance }}</p>
     </div>
     <div class="nav-mid">
       <h1>{{ game.game_name }}</h1>
@@ -44,6 +44,25 @@
     <button id="clear">Reset</button>
   </div>
 </div>
+{% if bet != None %}
+<!-- Interfaz de apuestas -->
+<div class="container" id="apuestaActual">
+  <!-- opciones de apuesta -->
+  <div class="bet-input" id="InfoApuesta">
+    Apuesta actual: {{ bet.valor }} - {{ bet.color }} 
+  </div>
+  <a href="{{ url_for('cancelbet', id=game.game_id ) }}" class="button-register" id="linkCancel"> Cancelar apuesta </a>
+</div>
+{% else %}
+<!-- Interfaz de apuestas -->
+<div class="container" id="apuestaActual" style="display: none;">
+  <!-- opciones de apuesta -->
+  <div class="bet-input" id="InfoApuesta">
+    Apuesta actual: 
+  </div>
+  <a href="#" class="button-register" id="linkCancel"> Cancelar apuesta </a>
+</div>
+{% endif %}
 
   <div class="bet-options">
     <!-- Rojo -->

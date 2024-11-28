@@ -2,7 +2,7 @@
 from flask import (
     Flask, render_template, jsonify, request, session, redirect, url_for
 )
-
+import psycopg2
 # Hasheo 
 import hashlib
 
@@ -196,7 +196,6 @@ def game(id):
         )
 
         user = operacionesDB.rjugador_id(token['id'])
-
         try:
             game = operacionesDB.get_game_by_id(id)
             if game is None: 
@@ -204,8 +203,10 @@ def game(id):
         except SQLAlchemyError: 
             redirect(url_for('games'))
 
+        bet = operacionesDB.apuesta_jugador_juego(token['id'], int(id))
+
         # Renderizando template con payload
-        return render_template("game.html", user = user, game = game)
+        return render_template("game.html", user = user, game = game, bet = bet)
     # Si no hay web token redireccionamos al login
     return redirect(url_for('login'))
 
@@ -289,7 +290,7 @@ def register_referral(id):
 def result(id):
     if 'jwt' not in session:
         return jsonify({ "value": -1 })
-    return jsonify({ "value": str(operacionesDB.resultado(id))})
+    return jsonify({ "value": str(operacionesDB.resultado(int(id)))})
     
 @app.route('/ruleta.js/<id>')
 def ruletaScript(id):
@@ -306,6 +307,44 @@ def balance():
             algorithms=["HS256"]
     )
     return render_template("historial_balance.html", balance = operacionesDB.historial_balance(token['id']))
+
+@app.route('/game/<id>/apuesta', methods = ['POST'])
+def apuesta(id): 
+    if 'jwt' not in session:
+        return jsonify({ "Error": "Usuario no registrado" })
+    data = request.get_json()
+    token = jwt.decode (
+            session['jwt'], 
+            secret_key, 
+            algorithms=["HS256"]
+    )
+    try:
+        operacionesDB.nuevapuesta(
+                token['id'], 
+                int(id),
+                data['cantidad'], 
+                data['color']
+            )
+        response = operacionesDB.apuesta_jugador_juego(token['id'], int(id))
+        return jsonify({
+            "valor": response.valor,
+            "color": response.color,
+            "juego": id
+            });
+    except:
+        return jsonify({"Error": "Ha ocurrido un error"})
+
+@app.route('/cancelbet/<id>')
+def cancelbet(id): 
+    if 'jwt' not in session:
+        return redirect(url_for('index'))
+    token = jwt.decode (
+            session['jwt'], 
+            secret_key, 
+            algorithms=["HS256"]
+    )
+    operacionesDB.cancel_bet(token['id'], int(id))
+    return redirect(url_for('game', id = id))
 
 @app.route("/logout")
 def logout():
