@@ -455,3 +455,26 @@ BEGIN
 	RETURN; 
 END;
 $$ LANGUAGE plpgsql;
+
+
+-- Vista para analisis de datos anonima
+CREATE OR REPLACE VIEW hechos AS
+SELECT 
+	h.transaccion_id, 
+	h.cantidad, 
+	h.tipo_transaccion, 
+	COALESCE(Div.nombre_divisa, 'Coins') AS Divisa, 
+	COALESCE(Div.simbolo_divisa, '$') AS Divisa_simbolo,
+	COALESCE(G.game_id, 0) AS id_juego,
+	COALESCE(G.min_apuesta,0) AS min_apuesta,
+	COALESCE(G.capacidad, 0) AS capacidad,
+	T.fecha, 
+	T."año", 
+	T.mes, 
+	T.dia, 
+	T.dia_semana, 
+	T.trimestre
+FROM hechos_transacciones h
+LEFT JOIN "Dim_Juego" G ON h.game_id = G.dim_juego_id 
+LEFT JOIN "Dim_Tiempo" T ON h.tiempo_id = T.dim_tiempo_id
+LEFT JOIN "Dim_Divisas" Div ON H.div_id = Div.div_id;

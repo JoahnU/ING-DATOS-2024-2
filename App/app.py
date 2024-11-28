@@ -346,6 +346,20 @@ def cancelbet(id):
     operacionesDB.cancel_bet(token['id'], int(id))
     return redirect(url_for('game', id = id))
 
+@app.route("/appdata")
+def data(): 
+    if 'jwt' not in session:
+        return redirect(url_for('index'))
+    token = jwt.decode (
+            session['jwt'], 
+            secret_key, 
+            algorithms=["HS256"]
+    )
+    if not (operacionesDB.rjugador_id(token['id']).user_type): 
+        return redirect(url_for('index'))
+    return render_template("data.html", hechos = operacionesDB.data_app())
+
+
 @app.route("/logout")
 def logout():
     session.clear()

@@ -109,6 +109,13 @@ def historial_balance(id):
             }
         ).all()
 
+def data_app(): 
+    # Creando compra mediante procedimiento buyCurrency   
+    with engine.begin() as connection:
+        return connection.execute(
+            text("SELECT * FROM hechos;")
+        ).all()
+
 #read
 def rjugador_id(player_id):
     player = session.query(Jugador).filter(Jugador.player_id==player_id).first()

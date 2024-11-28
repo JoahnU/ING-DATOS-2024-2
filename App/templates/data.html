@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juegos Disponibles - Gambling4ever</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='roulette.png') }}" type="image/x-icon">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #1e1e1e;
+        }
+        .table-container {
+            height: 900px; 
+            overflow: auto;
+            background: #333;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+            width: 99%;
+            color: white;
+        }
+        .table-container h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #D32F2F;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+        }
+        .homepage-btn {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #D32F2F;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+            color: white;
+        }
+        th {
+            background: #444;
+            color: #D32F2F;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+        td {
+            background: #222;
+            font-size: 0.95rem;
+        }
+        tr:nth-child(even) td {
+            background: #2a2a2a;
+        }
+        tr:hover td {
+            background: #333;
+        }
+        a {
+            color: #D32F2F;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="table-container">
+    <h2>Informacion transacciones</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Id transaccion</th>
+                <th>Cantidad </th>
+                <th>Tipo transaccion</th>
+                <th>divisa</th>
+                <th>divisa simbolo</th>
+                <th>id juego</th>
+                <th>Apuesta minima</th>
+                <th>Capacidad</th>
+                <th>Fecha</th>
+                <th>Dia semana</th>
+                <th>trimestre</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Aquí se insertarán las filas dinámicamente -->
+            {% for dato in hechos %}
+                <tr>
+                    <td>{{ dato.transaccion_id }}</td>
+                    <td>{{ dato.cantidad }}</td>
+                    <td>{{ dato.tipo_transaccion }}</td>
+                    <td>{{ dato.divisa }}</td>
+                    <td>{{ dato.divisa_simbolo }}</td>
+                    <td>{{ dato.id_juego }}</td>
+                    <td>{{ dato.min_apuesta }}</td>
+                    <td>{{ dato.capacidad }}</td>
+                    <td>{{ dato.fecha }}</td>
+                    <td>{{ dato.dia_semana }}</td>
+                    <td>{{ dato.trimestre }}</td>
+                </tr>
+            {% endfor %}
+        
+            <!-- Más filas según los datos -->
+        </tbody>
+    </table>
+    <p><a href="{{ url_for('index') }}" style="color: #D32F2F;">Volver</a></p>
+</div>
+
+</body>
+</html>

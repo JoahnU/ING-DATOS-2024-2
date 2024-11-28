@@ -88,6 +88,9 @@
             <a href="{{ url_for('games') }}"  class="btn">Ver Juegos Disponibles</a>
             <a href="{{ url_for('getCurrency') }}"  class="btn">Obtener fichas</a>
             <a href="{{ url_for('referral', id = user.player_id ) }}"  class="btn">Link de referido</a>
+            {% if user.user_type %}
+            <a href="{{ url_for('data') }}" class=btn>Transacciones</a>
+            {% endif %}
         </div>
     </div>
 </body>
